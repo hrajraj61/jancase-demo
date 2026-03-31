@@ -20,7 +20,10 @@ import { buildDashboardStats } from "@/lib/dashboard";
 import type { DashboardReport, DashboardResponse, DashboardStats } from "@/lib/types";
 
 const DashboardMap = dynamic(
-  () => import("@/components/DashboardMap").then((mod) => mod.DashboardMap),
+  () =>
+    import("@/app/_client/DashboardCategoryMap").then(
+      (mod) => mod.DashboardCategoryMap,
+    ),
   { ssr: false },
 );
 
