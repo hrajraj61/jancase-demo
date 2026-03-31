@@ -41,6 +41,11 @@ const initialCoordinates: Coordinates = {
   longitude: "",
 };
 
+const defaultMapCoordinates: SelectedMapCoordinates = {
+  latitude: 23.99,
+  longitude: 85.36,
+};
+
 const LocationPickerMap = dynamic(
   () => import("@/app/_client/LocationPickerMap").then((mod) => mod.LocationPickerMap),
   { ssr: false },
@@ -129,7 +134,7 @@ export function CitizenPortal() {
   }
 
   function openMapPicker() {
-    setMapDraft(selectedCoordinates);
+    setMapDraft(selectedCoordinates ?? defaultMapCoordinates);
     setIsMapPickerOpen(true);
   }
 
@@ -278,9 +283,10 @@ export function CitizenPortal() {
         <div className="relative grid gap-0 lg:grid-cols-[0.95fr_1.05fr]">
           <section className="border-b border-slate-200/40 p-4 sm:p-5 lg:border-b-0 lg:border-r lg:p-6">
             <div className="mb-5 flex flex-wrap items-center gap-2">
-              <AppBadge label="Glassmorphism" />
-              <AppBadge label="Manual latitude/longitude" />
+              <AppBadge label="Intelligent City Case Filer" />
+              <AppBadge label="Citizen to Mayor" />
               <AppBadge label="AI triage" />
+              <AppBadge label="Mayor AI Initiative" />
             </div>
 
             <div className="mb-6">

@@ -57,7 +57,7 @@ function MapClickSelector({
 }
 
 export function LocationPickerMap({ value, onChange }: LocationPickerMapProps) {
-  const defaultCenter: [number, number] = [24.0274, 85.3704];
+  const defaultCenter: [number, number] = [23.99, 85.36];
   const center: [number, number] = value
     ? [value.latitude, value.longitude]
     : defaultCenter;
