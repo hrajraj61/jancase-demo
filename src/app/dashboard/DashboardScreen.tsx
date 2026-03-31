@@ -614,10 +614,7 @@ export function DashboardScreen() {
               <h1 className="mt-3 text-3xl font-bold text-slate-800 sm:text-4xl">
                 Mayor Dashboard
               </h1>
-              <p className="mt-2 text-sm text-slate-500">
-                Real data source: <span className="font-semibold text-slate-700">/api/reports</span>{" "}
-                from your Report table.
-              </p>
+              
             </div>
             <div className="flex flex-wrap gap-3 text-sm">
               <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50/80 px-4 py-2 text-emerald-700">
