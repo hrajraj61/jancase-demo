@@ -1,4 +1,4 @@
-import { DashboardScreen } from "@/app/dashboard/DashboardScreen";
+import { DashboardScreen } from "../dashboard/DashboardScreen";
 
 export default function MayorPage() {
   return <DashboardScreen />;

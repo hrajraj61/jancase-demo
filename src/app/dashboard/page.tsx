@@ -1,4 +1,4 @@
-import { DashboardScreen } from "@/app/dashboard/DashboardScreen";
+import { DashboardScreen } from "./DashboardScreen";
 
 export default function DashboardPage() {
   return <DashboardScreen />;
