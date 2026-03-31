@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --background: #0f172a;
-  --foreground: #e2e8f0;
+  --background: #ffffff;
+  --foreground: #1e293b;
 }
 
 html {
@@ -16,6 +16,22 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, sans-serif;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 55% 50% at 10% 15%, rgba(147, 51, 234, 0.15) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 45% at 85% 80%, rgba(219, 39, 119, 0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 45% 40% at 60% 5%, rgba(168, 85, 247, 0.1) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 35% at 25% 90%, rgba(236, 72, 153, 0.1) 0%, transparent 60%),
+    radial-gradient(ellipse 35% 30% at 75% 35%, rgba(124, 58, 237, 0.08) 0%, transparent 55%),
+    #ffffff;
 }
 
 * {
@@ -23,6 +39,6 @@ body {
 }
 
 .leaflet-container {
-  background: #020617;
+  background: #f8fafc;
   font-family: var(--font-geist-sans), Arial, sans-serif;
 }

@@ -24,6 +24,11 @@ const DashboardMap = dynamic(
   { ssr: false },
 );
 
+const SentimentMap = dynamic(
+  () => import("@/app/_client/SentimentMap").then((mod) => mod.SentimentMap),
+  { ssr: false },
+);
+
 type StatusFilter = "All" | "Pending" | "Resolved";
 type TimeFilter = "24h" | "7d" | "30d" | "all";
 type DashboardTab = "insights" | "reports";
@@ -42,8 +47,8 @@ function safeText(value: string | null | undefined, fallback: string) {
 
 function formatStatus(value: string) {
   return value.toLowerCase() === "pending"
-    ? "bg-amber-500/15 text-amber-300 border-amber-500/25"
-    : "bg-emerald-500/15 text-emerald-300 border-emerald-500/25";
+    ? "bg-amber-100/80 text-amber-700 border-amber-200"
+    : "bg-emerald-100/80 text-emerald-700 border-emerald-200";
 }
 
 function calculateHighPriority(reports: DashboardReport[]) {
@@ -131,14 +136,14 @@ function StatCard({
   tone: string;
 }) {
   return (
-    <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-5">
+    <div className="rounded-3xl border border-white/50 bg-white/40 p-5 backdrop-blur-xl">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm text-slate-400">{label}</p>
+        <p className="text-sm text-slate-500">{label}</p>
         <div className={`rounded-2xl p-2 ${tone}`}>
           <Icon className="h-5 w-5" />
         </div>
       </div>
-      <p className="mt-4 text-3xl font-bold text-white">{value}</p>
+      <p className="mt-4 text-3xl font-bold text-slate-800">{value}</p>
     </div>
   );
 }
@@ -160,8 +165,8 @@ function TabButton({
       onClick={onClick}
       className={`inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition ${
         active
-          ? "bg-blue-500 text-white shadow-lg shadow-blue-900/30"
-          : "bg-slate-950 text-slate-400 hover:bg-slate-900 hover:text-white"
+          ? "bg-blue-500 text-white shadow-lg shadow-blue-500/20"
+          : "bg-white/50 text-slate-500 hover:bg-white/70 hover:text-slate-800"
       }`}
     >
       <Icon className="h-4 w-4" />
@@ -181,55 +186,55 @@ function AIInsightsPanel({
 
   return (
     <div className="space-y-4">
-      <section className="rounded-2xl bg-slate-950 p-4">
-        <h3 className="text-lg font-semibold text-white">AI Analysed Insights</h3>
+      <section className="rounded-2xl bg-white/30 p-4 backdrop-blur-sm">
+        <h3 className="text-lg font-semibold text-slate-800">AI Analysed Insights</h3>
         <div className="mt-4 grid gap-3">
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+          <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
             <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Dominant category</p>
-            <p className="mt-2 text-xl font-bold text-white">{insights.topCategory}</p>
+            <p className="mt-2 text-xl font-bold text-slate-800">{insights.topCategory}</p>
           </div>
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+          <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
             <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Most negative ward</p>
-            <p className="mt-2 text-lg font-semibold text-white">{insights.mostNegativeWard}</p>
+            <p className="mt-2 text-lg font-semibold text-slate-800">{insights.mostNegativeWard}</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+            <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
               <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Top department</p>
-              <p className="mt-2 text-base font-semibold text-white">
+              <p className="mt-2 text-base font-semibold text-slate-800">
                 {insights.topDepartment}
               </p>
             </div>
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+            <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
               <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Average confidence</p>
-              <p className="mt-2 text-base font-semibold text-white">
+              <p className="mt-2 text-base font-semibold text-slate-800">
                 {insights.averageConfidence}
               </p>
             </div>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+            <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
               <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Angry signals</p>
-              <p className="mt-2 text-base font-semibold text-red-300">{insights.angryCount}</p>
+              <p className="mt-2 text-base font-semibold text-red-600">{insights.angryCount}</p>
             </div>
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+            <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
               <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Top signal tag</p>
-              <p className="mt-2 text-base font-semibold text-white">{insights.topSignal}</p>
+              <p className="mt-2 text-base font-semibold text-slate-800">{insights.topSignal}</p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="rounded-2xl bg-slate-950 p-4">
-        <h3 className="text-lg font-semibold text-white">Reports by Category</h3>
+      <section className="rounded-2xl bg-white/30 p-4 backdrop-blur-sm">
+        <h3 className="text-lg font-semibold text-slate-800">Reports by Category</h3>
         <div className="mt-4 space-y-3">
           {stats.reportsPerCategory.length > 0 ? (
             stats.reportsPerCategory.map((item) => (
               <div key={item.category}>
-                <div className="mb-1 flex items-center justify-between text-sm text-slate-300">
+                <div className="mb-1 flex items-center justify-between text-sm text-slate-600">
                   <span>{item.category}</span>
                   <span>{item.count}</span>
                 </div>
-                <div className="h-2 rounded-full bg-slate-800">
+                <div className="h-2 rounded-full bg-slate-200/60">
                   <div
                     className="h-full rounded-full bg-blue-500"
                     style={{
@@ -243,26 +248,26 @@ function AIInsightsPanel({
               </div>
             ))
           ) : (
-            <p className="text-sm text-slate-500">No category data available for this filter.</p>
+            <p className="text-sm text-slate-400">No category data available for this filter.</p>
           )}
         </div>
       </section>
 
-      <section className="rounded-2xl bg-slate-950 p-4">
-        <h3 className="text-lg font-semibold text-white">Ward Sentiment</h3>
+      <section className="rounded-2xl bg-white/30 p-4 backdrop-blur-sm">
+        <h3 className="text-lg font-semibold text-slate-800">Ward Sentiment</h3>
         <div className="mt-4 space-y-3">
           {stats.wardSentiment.length > 0 ? (
             stats.wardSentiment.map((ward) => (
               <div
                 key={ward.wardNumber}
-                className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-900/70 px-4 py-3"
+                className="flex items-center justify-between rounded-2xl border border-white/50 bg-white/50 px-4 py-3"
               >
                 <div>
-                  <p className="text-sm font-medium text-white">Ward {ward.wardNumber}</p>
-                  <p className="text-xs text-slate-400">{ward.reportCount} reports</p>
+                  <p className="text-sm font-medium text-slate-800">Ward {ward.wardNumber}</p>
+                  <p className="text-xs text-slate-500">{ward.reportCount} reports</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="h-3 w-24 overflow-hidden rounded-full bg-slate-800">
+                  <div className="h-3 w-24 overflow-hidden rounded-full bg-slate-200/60">
                     <div
                       className={`h-full rounded-full ${sentimentBarColor(ward.averageSentiment)}`}
                       style={{
@@ -270,14 +275,14 @@ function AIInsightsPanel({
                       }}
                     />
                   </div>
-                  <span className="text-sm text-slate-200">
+                  <span className="text-sm text-slate-700">
                     {ward.averageSentiment.toFixed(2)}
                   </span>
                 </div>
               </div>
             ))
           ) : (
-            <p className="text-sm text-slate-500">No ward sentiment data available.</p>
+            <p className="text-sm text-slate-400">No ward sentiment data available.</p>
           )}
         </div>
       </section>
@@ -301,8 +306,8 @@ function ReportsDataPanel({
 
   return (
     <div className="space-y-4">
-      <section className="rounded-2xl bg-slate-950 p-4">
-        <h3 className="text-lg font-semibold text-white">Reports Data</h3>
+      <section className="rounded-2xl bg-white/30 p-4 backdrop-blur-sm">
+        <h3 className="text-lg font-semibold text-slate-800">Reports Data</h3>
         <div className="mt-4 max-h-[24rem] space-y-3 overflow-y-auto pr-1">
           {reports.length > 0 ? (
             reports.map((report) => (
@@ -312,8 +317,8 @@ function ReportsDataPanel({
                 onClick={() => onSelect(report)}
                 className={`w-full rounded-2xl border px-4 py-3 text-left transition ${
                   selectedReport?.id === report.id
-                    ? "border-blue-500/50 bg-blue-500/10"
-                    : "border-slate-800 bg-slate-900/70 hover:border-slate-700"
+                    ? "border-blue-300 bg-blue-50/70"
+                    : "border-white/50 bg-white/50 hover:border-slate-300"
                 }`}
               >
                 <div className="mb-2 flex items-center justify-between gap-3">
@@ -322,14 +327,14 @@ function ReportsDataPanel({
                   >
                     {report.status}
                   </span>
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs text-slate-400">
                     {new Date(report.createdAt).toLocaleString()}
                   </span>
                 </div>
-                <p className="text-base font-bold text-white">
+                <p className="text-base font-bold text-slate-800">
                   {safeText(report.aiSummary, "No AI summary generated")}
                 </p>
-                <p className="mt-1 text-sm text-slate-300">
+                <p className="mt-1 text-sm text-slate-500">
                   {safeText(report.description, "No citizen description provided")}
                 </p>
                 <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-400">
@@ -340,16 +345,16 @@ function ReportsDataPanel({
               </button>
             ))
           ) : (
-            <p className="text-sm text-slate-500">No reports found for the current filters.</p>
+            <p className="text-sm text-slate-400">No reports found for the current filters.</p>
           )}
         </div>
       </section>
 
-      <section className="rounded-2xl bg-slate-950 p-4">
-        <h3 className="text-lg font-semibold text-white">Selected Report</h3>
+      <section className="rounded-2xl bg-white/30 p-4 backdrop-blur-sm">
+        <h3 className="text-lg font-semibold text-slate-800">Selected Report</h3>
         {selectedReport ? (
           <div className="mt-4 space-y-4">
-            <div className="relative h-56 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
+            <div className="relative h-56 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
               {selectedReport.imageUrl ? (
                 <Image
                   src={selectedReport.imageUrl}
@@ -359,90 +364,90 @@ function ReportsDataPanel({
                   className="object-cover"
                 />
               ) : (
-                <div className="flex h-full items-center justify-center px-6 text-center text-sm text-slate-500">
+                <div className="flex h-full items-center justify-center px-6 text-center text-sm text-slate-400">
                   No image uploaded for this complaint.
                 </div>
               )}
             </div>
 
-            <div className="rounded-2xl border border-blue-500/30 bg-blue-500/10 p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-blue-200">AI Summary</p>
-              <p className="mt-2 text-lg font-bold text-white">
+            <div className="rounded-2xl border border-blue-200 bg-blue-50/70 p-4">
+              <p className="text-xs uppercase tracking-[0.2em] text-blue-500">AI Summary</p>
+              <p className="mt-2 text-lg font-bold text-slate-800">
                 {safeText(selectedReport.aiSummary, "No AI summary generated")}
               </p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
+              <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
                 <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Category</p>
-                <p className="mt-2 text-sm font-semibold text-white">
+                <p className="mt-2 text-sm font-semibold text-slate-800">
                   {safeText(selectedReport.category, "General")}
                 </p>
               </div>
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
+              <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
                 <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Priority</p>
-                <p className="mt-2 text-sm font-semibold text-white">
+                <p className="mt-2 text-sm font-semibold text-slate-800">
                   {safeText(selectedReport.aiPriorityLabel, "Medium")}
                 </p>
               </div>
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
+              <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
                 <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Department</p>
-                <p className="mt-2 text-sm font-semibold text-white">
+                <p className="mt-2 text-sm font-semibold text-slate-800">
                   {safeText(selectedReport.aiDepartment, "Municipal Operations")}
                 </p>
               </div>
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
+              <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
                 <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Confidence</p>
-                <p className="mt-2 text-sm font-semibold text-white">
+                <p className="mt-2 text-sm font-semibold text-slate-800">
                   {selectedReport.aiConfidence?.toFixed(2) ?? "N/A"}
                 </p>
               </div>
             </div>
 
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
+            <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
               <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Action Required</p>
-              <p className="mt-2 text-sm leading-6 text-slate-100">
+              <p className="mt-2 text-sm leading-6 text-slate-700">
                 {safeText(selectedReport.aiActionRequired, "No action recommendation generated")}
               </p>
             </div>
 
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
+            <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
               <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Visual Summary</p>
-              <p className="mt-2 text-sm leading-6 text-slate-100">
+              <p className="mt-2 text-sm leading-6 text-slate-700">
                 {safeText(selectedReport.aiVisualSummary, "No visual summary generated")}
               </p>
             </div>
 
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
+            <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
               <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Detected Signals</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {selectedReport.aiKeySignals.length > 0 ? (
                   selectedReport.aiKeySignals.map((signal) => (
                     <span
                       key={signal}
-                      className="rounded-full border border-slate-700 bg-slate-800 px-3 py-1 text-xs text-slate-200"
+                      className="rounded-full border border-slate-200 bg-white/70 px-3 py-1 text-xs text-slate-600"
                     >
                       {signal}
                     </span>
                   ))
                 ) : (
-                  <span className="text-sm text-slate-500">No AI signal tags</span>
+                  <span className="text-sm text-slate-400">No AI signal tags</span>
                 )}
               </div>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
+              <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
                 <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Coordinates</p>
-                <p className="mt-2 text-sm text-slate-100">
+                <p className="mt-2 text-sm text-slate-700">
                   {selectedReport.latitude != null && selectedReport.longitude != null
                     ? `${selectedReport.latitude}, ${selectedReport.longitude}`
                     : "Location not provided"}
                 </p>
               </div>
-              <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
+              <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
                 <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Ward / Status</p>
-                <p className="mt-2 text-sm text-slate-100">
+                <p className="mt-2 text-sm text-slate-700">
                   Ward {selectedReport.wardNumber ?? "Unknown"} / {selectedReport.status}
                 </p>
               </div>
@@ -460,20 +465,20 @@ function ReportsDataPanel({
                   href={mapsUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-700 bg-slate-900 px-4 py-2.5 text-sm font-semibold text-slate-100 transition hover:bg-slate-800"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white/70 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-white"
                 >
                   <ExternalLink className="h-4 w-4" />
                   Open in Maps
                 </a>
               ) : (
-                <div className="flex items-center justify-center rounded-full border border-slate-800 bg-slate-900 px-4 py-2.5 text-sm text-slate-500">
+                <div className="flex items-center justify-center rounded-full border border-slate-200 bg-white/50 px-4 py-2.5 text-sm text-slate-400">
                   No map coordinates
                 </div>
               )}
             </div>
           </div>
         ) : (
-          <div className="mt-4 rounded-2xl bg-slate-900 px-4 py-10 text-center text-sm text-slate-500">
+          <div className="mt-4 rounded-2xl bg-white/40 px-4 py-10 text-center text-sm text-slate-400">
             Select a report from the list or map.
           </div>
         )}
@@ -590,46 +595,54 @@ export function DashboardScreen() {
   const recentReports = useMemo(() => filteredReports.slice(0, 10), [filteredReports]);
 
   return (
-    <main className="min-h-screen bg-slate-950 px-3 py-4 pb-24 text-white sm:px-5 lg:px-6 xl:pb-6">
+    <main className="min-h-screen px-3 py-4 pb-24 sm:px-5 lg:px-6 xl:pb-6">
       <div className="mx-auto w-full max-w-none space-y-5">
-        <header className="rounded-3xl border border-slate-800 bg-slate-900/75 p-5 lg:p-6">
+        <header className="rounded-3xl border border-white/50 bg-white/40 p-5 backdrop-blur-xl lg:p-6">
+          {/* Cloudivion Branding */}
+          <div className="mb-5 flex items-center gap-3 rounded-2xl border border-slate-200/40 bg-white/30 px-4 py-2.5">
+            <a href="https://www.cloudivion.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 opacity-80 transition hover:opacity-100">
+              <Image src="https://www.cloudivion.com/images/cloudivion-logo.png" alt="Cloudivion" width={50} height={50} className="h-[50px] w-auto object-contain" />
+              <span className="text-xs text-slate-500">Proof of Concept by <span className="font-semibold text-slate-700">cloudivion.com</span></span>
+            </a>
+          </div>
+
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="text-sm uppercase tracking-[0.35em] text-emerald-300">
+              <p className="text-sm uppercase tracking-[0.35em] text-purple-600">
                 Hazaribagh Control Room
               </p>
-              <h1 className="mt-3 text-3xl font-bold text-white sm:text-4xl">
+              <h1 className="mt-3 text-3xl font-bold text-slate-800 sm:text-4xl">
                 Mayor Dashboard
               </h1>
-              <p className="mt-2 text-sm text-slate-400">
-                Real data source: <span className="font-semibold text-slate-200">/api/reports</span>{" "}
+              <p className="mt-2 text-sm text-slate-500">
+                Real data source: <span className="font-semibold text-slate-700">/api/reports</span>{" "}
                 from your Report table.
               </p>
             </div>
             <div className="flex flex-wrap gap-3 text-sm">
-              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-4 py-2 text-emerald-200">
-                <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50/80 px-4 py-2 text-emerald-700">
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
                 Live updates
               </div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-950 px-4 py-2 text-slate-300">
+              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/60 px-4 py-2 text-slate-600">
                 <RefreshCcw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
                 Updating every 7s
               </div>
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-950 px-4 py-2 text-slate-300 hover:bg-slate-900"
+                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/60 px-4 py-2 text-slate-600 hover:bg-white/80"
               >
                 Citizen App
               </Link>
             </div>
           </div>
-          <p className="mt-4 text-xs text-slate-500">
+          <p className="mt-4 text-xs text-slate-400">
             Last refreshed: {lastUpdated ? lastUpdated.toLocaleTimeString() : "Loading..."}
           </p>
         </header>
 
         {error ? (
-          <div className="rounded-3xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-100">
+          <div className="rounded-3xl border border-red-200 bg-red-50/80 p-4 text-sm text-red-700">
             {error}
           </div>
         ) : null}
@@ -639,31 +652,31 @@ export function DashboardScreen() {
             label="Total Complaints"
             value={filteredStats.totalReports}
             icon={BarChart3}
-            tone="bg-blue-500/15 text-blue-300"
+            tone="bg-blue-100 text-blue-600"
           />
           <StatCard
             label="Pending Issues"
             value={filteredStats.pendingReports}
             icon={Clock3}
-            tone="bg-amber-500/15 text-amber-300"
+            tone="bg-amber-100 text-amber-600"
           />
           <StatCard
             label="Resolved Today"
             value={resolvedToday}
             icon={CheckCircle2}
-            tone="bg-emerald-500/15 text-emerald-300"
+            tone="bg-emerald-100 text-emerald-600"
           />
           <StatCard
             label="High Priority Issues"
             value={highPriority}
             icon={AlertTriangle}
-            tone="bg-red-500/15 text-red-300"
+            tone="bg-red-100 text-red-600"
           />
         </section>
 
-        <section className="rounded-3xl border border-slate-800 bg-slate-900/75 p-4">
+        <section className="rounded-3xl border border-white/50 bg-white/40 p-4 backdrop-blur-xl">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex items-center gap-2 text-sm text-slate-300">
+            <div className="flex items-center gap-2 text-sm text-slate-600">
               <Filter className="h-4 w-4" />
               Filters
             </div>
@@ -671,7 +684,7 @@ export function DashboardScreen() {
               <select
                 value={statusFilter}
                 onChange={(event) => setStatusFilter(event.target.value as StatusFilter)}
-                className="rounded-2xl border border-slate-700 bg-slate-950 px-4 py-2 text-sm text-slate-100 outline-none"
+                className="rounded-2xl border border-slate-200 bg-white/70 px-4 py-2 text-sm text-slate-700 outline-none"
               >
                 <option value="All">All Status</option>
                 <option value="Pending">Pending</option>
@@ -681,7 +694,7 @@ export function DashboardScreen() {
               <select
                 value={categoryFilter}
                 onChange={(event) => setCategoryFilter(event.target.value)}
-                className="rounded-2xl border border-slate-700 bg-slate-950 px-4 py-2 text-sm text-slate-100 outline-none"
+                className="rounded-2xl border border-slate-200 bg-white/70 px-4 py-2 text-sm text-slate-700 outline-none"
               >
                 <option value="All">All Categories</option>
                 {categories.map((category) => (
@@ -694,7 +707,7 @@ export function DashboardScreen() {
               <select
                 value={timeFilter}
                 onChange={(event) => setTimeFilter(event.target.value as TimeFilter)}
-                className="rounded-2xl border border-slate-700 bg-slate-950 px-4 py-2 text-sm text-slate-100 outline-none"
+                className="rounded-2xl border border-slate-200 bg-white/70 px-4 py-2 text-sm text-slate-700 outline-none"
               >
                 <option value="24h">Last 24 hours</option>
                 <option value="7d">Last 7 days</option>
@@ -705,7 +718,7 @@ export function DashboardScreen() {
               <button
                 type="button"
                 onClick={() => setShowHeatmap((current) => !current)}
-                className="rounded-2xl border border-slate-700 bg-slate-950 px-4 py-2 text-sm text-slate-100"
+                className="rounded-2xl border border-slate-200 bg-white/70 px-4 py-2 text-sm text-slate-700"
               >
                 {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
               </button>
@@ -715,13 +728,13 @@ export function DashboardScreen() {
 
         <section className="grid gap-5 xl:grid-cols-[minmax(0,1.7fr)_430px]">
           <div className="space-y-5">
-            <section className="rounded-3xl border border-slate-800 bg-slate-900/75 p-4 lg:p-5">
+            <section className="rounded-3xl border border-white/50 bg-white/40 p-4 backdrop-blur-xl lg:p-5">
               <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <p className="text-sm text-slate-400">Map View</p>
-                  <h2 className="text-2xl font-bold text-white">Complaint map</h2>
+                  <p className="text-sm text-slate-500">Map View</p>
+                  <h2 className="text-2xl font-bold text-slate-800">Complaint map</h2>
                 </div>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-400">
                   Loaded {filteredReports.length} reports from database
                 </p>
               </div>
@@ -729,13 +742,37 @@ export function DashboardScreen() {
                 reports={filteredReports}
                 heatmap={showHeatmap ? filteredStats.heatmap : []}
               />
-              <p className="mt-3 text-xs text-slate-500">
+              <p className="mt-3 text-xs text-slate-400">
                 If two complaints have very close coordinates, heatmap blobs can merge visually.
                 Markers are slightly offset to keep each report clickable.
               </p>
             </section>
 
-            <section className="rounded-3xl border border-slate-800 bg-slate-900/75 p-4 xl:hidden">
+            <section className="rounded-3xl border border-white/50 bg-white/40 p-4 backdrop-blur-xl lg:p-5">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <p className="text-sm text-slate-500">Sentiment View</p>
+                  <h2 className="text-2xl font-bold text-slate-800">Sentiment map</h2>
+                </div>
+                <p className="text-xs text-slate-400">
+                  Based on sentimentLabel and sentimentScore
+                </p>
+              </div>
+              <SentimentMap reports={filteredReports} />
+              <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                <span className="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-red-700">
+                  Angry
+                </span>
+                <span className="rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-blue-700">
+                  Neutral
+                </span>
+                <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-emerald-700">
+                  Happy
+                </span>
+              </div>
+            </section>
+
+            <section className="rounded-3xl border border-white/50 bg-white/40 p-4 backdrop-blur-xl xl:hidden">
               <div className="mb-4 flex gap-2 overflow-x-auto">
                 <TabButton
                   active={activeTab === "insights"}
@@ -763,7 +800,7 @@ export function DashboardScreen() {
           </div>
 
           <aside className="hidden xl:block">
-            <div className="sticky top-6 space-y-4 rounded-3xl border border-slate-800 bg-slate-900/75 p-4">
+            <div className="sticky top-6 space-y-4 rounded-3xl border border-white/50 bg-white/40 p-4 backdrop-blur-xl">
               <div className="flex gap-2">
                 <TabButton
                   active={activeTab === "insights"}
@@ -792,13 +829,13 @@ export function DashboardScreen() {
         </section>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-800 bg-slate-950/95 p-3 backdrop-blur xl:hidden">
-        <div className="mx-auto flex max-w-md gap-2 rounded-2xl border border-slate-800 bg-slate-900 p-2">
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200/60 bg-white/80 p-3 backdrop-blur-xl xl:hidden">
+        <div className="mx-auto flex max-w-md gap-2 rounded-2xl border border-slate-200 bg-white/70 p-2">
           <button
             type="button"
             onClick={() => setActiveTab("insights")}
             className={`flex-1 rounded-xl px-4 py-3 text-sm font-semibold ${
-              activeTab === "insights" ? "bg-blue-500 text-white" : "text-slate-400"
+              activeTab === "insights" ? "bg-blue-500 text-white" : "text-slate-500"
             }`}
           >
             AI Insights
@@ -807,7 +844,7 @@ export function DashboardScreen() {
             type="button"
             onClick={() => setActiveTab("reports")}
             className={`flex-1 rounded-xl px-4 py-3 text-sm font-semibold ${
-              activeTab === "reports" ? "bg-blue-500 text-white" : "text-slate-400"
+              activeTab === "reports" ? "bg-blue-500 text-white" : "text-slate-500"
             }`}
           >
             Reports Data

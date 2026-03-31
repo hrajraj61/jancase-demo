@@ -14,8 +14,8 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "JanCase Hazaribagh",
-  description: "AI-assisted civic issue reporting and mayor monitoring dashboard.",
+  title: "JanCase Hazaribagh — A Cloudivion POC",
+  description: "AI-assisted civic issue reporting and mayor monitoring dashboard. A Proof of Concept by cloudivion.com",
 };
 
 export default function RootLayout({

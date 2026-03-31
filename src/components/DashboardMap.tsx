@@ -8,6 +8,49 @@ import { useEffect, useMemo } from "react";
 
 import type { DashboardReport, HeatmapPoint } from "@/lib/types";
 
+// Category color mapping
+const getCategoryColor = (category: string | null): string => {
+  switch (category?.toLowerCase()) {
+    case "garbage":
+      return "#ef4444"; // Red
+    case "drain":
+      return "#3b82f6"; // Blue
+    case "road":
+      return "#f59e0b"; // Orange
+    case "water":
+      return "#06b6d4"; // Cyan
+    default:
+      return "#6b7280"; // Gray for unknown categories
+  }
+};
+
+// Category legend
+const categoryLegend = [
+  { category: "Garbage", color: "#ef4444" },
+  { category: "Drain", color: "#3b82f6" },
+  { category: "Road", color: "#f59e0b" },
+  { category: "Water", color: "#06b6d4" },
+];
+
+function MapLegend() {
+  return (
+    <div className="absolute bottom-4 right-4 z-[1000] rounded-lg border border-white/50 bg-white/80 backdrop-blur-md p-3">
+      <h4 className="text-sm font-semibold text-slate-800 mb-2">Category Colors</h4>
+      <div className="space-y-1">
+        {categoryLegend.map(({ category, color }) => (
+          <div key={category} className="flex items-center gap-2">
+            <div 
+              className="w-3 h-3 rounded-full border border-white/50" 
+              style={{ backgroundColor: color }}
+            />
+            <span className="text-xs text-slate-700">{category}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function HeatLayer({ points }: { points: HeatmapPoint[] }) {
   const map = useMap();
 
@@ -106,7 +149,7 @@ export function DashboardMap({
   const displayReports = useMemo(() => createDisplayReports(reports), [reports]);
 
   return (
-    <div className="h-[34rem] overflow-hidden rounded-[2rem] border border-slate-800 bg-slate-950">
+    <div className="h-[34rem] overflow-hidden rounded-[2rem] border border-white/50 bg-white/40 backdrop-blur-md relative">
       <MapContainer center={[24.0274, 85.3704]} zoom={13} scrollWheelZoom className="h-full w-full">
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -120,12 +163,7 @@ export function DashboardMap({
             center={[report.displayLatitude, report.displayLongitude]}
             radius={8}
             pathOptions={{
-              color:
-                report.sentimentLabel === "angry"
-                  ? "#ef4444"
-                  : report.sentimentLabel === "happy"
-                    ? "#22c55e"
-                    : "#3b82f6",
+              color: getCategoryColor(report.category),
               fillOpacity: 0.92,
               weight: 2,
             }}

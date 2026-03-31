@@ -12,3 +12,31 @@
    Reload env: .env
    Reload env: .env
    Reload env: .env
+  ▲ Next.js 14.2.30
+  - Local:        http://localhost:3001
+  - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 3.2s
+  ▲ Next.js 14.2.30
+  - Local:        http://localhost:3000
+  - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 3.8s
+ ✓ Compiled /api/reports in 1096ms (139 modules)
+ GET /api/reports 200 in 3464ms
+ GET /api/reports 200 in 539ms
+ ○ Compiling /mayor ...
+ ✓ Compiled /mayor in 2.5s (823 modules)
+ ✓ Compiled in 211ms (351 modules)
+ GET /api/reports 200 in 684ms
+ GET /api/reports 200 in 2629ms
+ GET /api/reports 200 in 282ms
+ GET /api/reports 200 in 607ms
+  ▲ Next.js 14.2.30
+  - Local:        http://localhost:3001
+  - Environments: .env
+
+ ✓ Starting...
+ ✓ Ready in 3.6s

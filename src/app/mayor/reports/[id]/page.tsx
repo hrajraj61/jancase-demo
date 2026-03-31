@@ -6,9 +6,9 @@ import { ArrowLeft, ExternalLink, MapPin, ShieldAlert, Sparkles } from "lucide-r
 import { getReportDetail } from "@/lib/reports";
 
 function sentimentTone(label: string | null) {
-  if (label === "angry") return "bg-red-500/15 text-red-200 border-red-500/30";
-  if (label === "happy") return "bg-emerald-500/15 text-emerald-200 border-emerald-500/30";
-  return "bg-blue-500/15 text-blue-200 border-blue-500/30";
+  if (label === "angry") return "bg-red-100/80 text-red-700 border-red-200";
+  if (label === "happy") return "bg-emerald-100/80 text-emerald-700 border-emerald-200";
+  return "bg-blue-100/80 text-blue-700 border-blue-200";
 }
 
 export default async function MayorReportDetailPage({
