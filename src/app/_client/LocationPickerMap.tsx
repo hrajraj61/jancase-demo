@@ -15,6 +15,8 @@ type LocationPickerMapProps = {
   onChange: (coords: Coordinates) => void;
 };
 
+const PICKER_DEFAULT_ZOOM = 11;
+
 const markerIcon = L.icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
   iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
@@ -33,7 +35,10 @@ function RecenterMap({ coords }: { coords: Coordinates | null }) {
       return;
     }
 
-    map.setView([coords.latitude, coords.longitude], Math.max(map.getZoom(), 15));
+    map.setView(
+      [coords.latitude, coords.longitude],
+      Math.max(map.getZoom(), PICKER_DEFAULT_ZOOM),
+    );
   }, [coords, map]);
 
   return null;
@@ -65,7 +70,7 @@ export function LocationPickerMap({ value, onChange }: LocationPickerMapProps) {
   return (
     <MapContainer
       center={center}
-      zoom={13}
+      zoom={PICKER_DEFAULT_ZOOM}
       scrollWheelZoom
       className="h-full w-full"
     >

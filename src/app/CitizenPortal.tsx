@@ -81,8 +81,15 @@ export function CitizenPortal() {
   }, [coordinates.latitude, coordinates.longitude, description, selectedFile]);
 
   const selectedCoordinates = useMemo(() => {
-    const latitude = Number(coordinates.latitude);
-    const longitude = Number(coordinates.longitude);
+    const latText = coordinates.latitude.trim();
+    const lngText = coordinates.longitude.trim();
+
+    if (!latText || !lngText) {
+      return null;
+    }
+
+    const latitude = Number(latText);
+    const longitude = Number(lngText);
 
     if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
       return null;
@@ -426,6 +433,26 @@ export function CitizenPortal() {
           </section>
 
           <aside className="flex flex-col gap-4 p-4 sm:p-5 lg:p-6">
+            <section className="h-[150px] w-full overflow-hidden rounded-[1.6rem] border border-white/50 bg-white/55 p-3 backdrop-blur-xl">
+              <div className="flex h-full items-center gap-3">
+                <div className="relative h-[120px] w-[120px] shrink-0 overflow-hidden rounded-2xl border border-slate-200">
+                  <Image src="/arvind.jpeg" alt="Mayor Arvind Rana" fill className="object-cover" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-700">
+                    Know Your Mayor
+                  </p>
+                  <h3 className="text-sm font-semibold text-slate-800">Arvind Rana</h3>
+                  <p className="mt-1 text-[11px] leading-4 text-slate-600">
+                    Arvind Kumar Rana is the elected Mayor of Hazaribagh, committed to building a
+                    modern, inclusive, and citizen-centric city. With a background in journalism and
+                    social service, he brings a grassroots understanding of public issues and a strong
+                    connection with the community.
+                  </p>
+                </div>
+              </div>
+            </section>
+
             <div className="rounded-[1.8rem] border border-white/50 bg-white/40 p-4 backdrop-blur-xl">
               <div className="flex items-center justify-between">
                 <div>
