@@ -50,9 +50,10 @@ async function testGemini() {
 }
 
 async function testDatabase() {
-  const databaseUrl = process.env.DATABASE_URL;
+  // Try multiple database URL environment variables
+  const databaseUrl = process.env.DATABASE_URL || process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL;
   if (!databaseUrl) {
-    return { ok: false, message: "Missing DATABASE_URL" };
+    return { ok: false, message: "Missing DATABASE_URL, POSTGRES_PRISMA_URL, or POSTGRES_URL" };
   }
 
   const prisma = new PrismaClient();
@@ -68,10 +69,12 @@ async function testDatabase() {
 
 async function testSupabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY 
+    || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY 
+    || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url || !key) {
-    return { ok: false, message: "Missing Supabase URL or publishable key" };
+    return { ok: false, message: "Missing Supabase URL or any valid key" };
   }
 
   const authResponse = await fetch(`${url}/auth/v1/settings`, {
