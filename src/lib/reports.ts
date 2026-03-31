@@ -13,6 +13,13 @@ function serializeReport(report: {
   wardNumber: number | null;
   sentimentScore: number | null;
   sentimentLabel: string | null;
+  aiSummary: string | null;
+  aiActionRequired: string | null;
+  aiDepartment: string | null;
+  aiPriorityLabel: string | null;
+  aiVisualSummary: string | null;
+  aiConfidence: number | null;
+  aiKeySignals: string[];
   status: string;
 }): DashboardReport {
   return {

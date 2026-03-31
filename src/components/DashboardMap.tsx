@@ -1,9 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import "leaflet/dist/leaflet.css";
 
 import { CircleMarker, MapContainer, Popup, TileLayer, useMap } from "react-leaflet";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 
 import type { DashboardReport, HeatmapPoint } from "@/lib/types";
 
@@ -25,7 +26,7 @@ function HeatLayer({ points }: { points: HeatmapPoint[] }) {
         return;
       }
 
-      layer = heatFactory(points, { radius: 25, blur: 20, maxZoom: 14 }).addTo(map);
+      layer = heatFactory(points, { radius: 28, blur: 24, maxZoom: 14 }).addTo(map);
     }
 
     mountLayer();
@@ -40,6 +41,61 @@ function HeatLayer({ points }: { points: HeatmapPoint[] }) {
   return null;
 }
 
+function FitToReports({ reports }: { reports: DashboardReport[] }) {
+  const map = useMap();
+
+  useEffect(() => {
+    const coordinates = reports
+      .filter((report) => report.latitude != null && report.longitude != null)
+      .map((report) => [report.latitude as number, report.longitude as number] as [number, number]);
+
+    if (coordinates.length === 0) {
+      return;
+    }
+
+    if (coordinates.length === 1) {
+      map.setView(coordinates[0], 15);
+      return;
+    }
+
+    map.fitBounds(coordinates, { padding: [36, 36] });
+  }, [map, reports]);
+
+  return null;
+}
+
+function createDisplayReports(reports: DashboardReport[]) {
+  const placed: Array<DashboardReport & { displayLatitude: number; displayLongitude: number; nearbyCount: number }> = [];
+  const threshold = 0.00045;
+  const offsetStep = 0.00018;
+
+  for (const report of reports) {
+    if (report.latitude == null || report.longitude == null) {
+      continue;
+    }
+
+    const latitude = report.latitude;
+    const longitude = report.longitude;
+    const nearby = placed.filter(
+      (item) =>
+        Math.abs(item.latitude! - latitude) <= threshold &&
+        Math.abs(item.longitude! - longitude) <= threshold,
+    );
+
+    const angle = nearby.length * 1.35;
+    const radius = nearby.length * offsetStep;
+
+    placed.push({
+      ...report,
+      displayLatitude: latitude + Math.sin(angle) * radius,
+      displayLongitude: longitude + Math.cos(angle) * radius,
+      nearbyCount: nearby.length + 1,
+    });
+  }
+
+  return placed;
+}
+
 export function DashboardMap({
   reports,
   heatmap,
@@ -47,23 +103,22 @@ export function DashboardMap({
   reports: DashboardReport[];
   heatmap: HeatmapPoint[];
 }) {
-  const mappableReports = reports.filter(
-    (report) => report.latitude != null && report.longitude != null,
-  );
+  const displayReports = useMemo(() => createDisplayReports(reports), [reports]);
 
   return (
-    <div className="h-[30rem] overflow-hidden rounded-[2rem] border border-slate-800 bg-slate-950">
+    <div className="h-[34rem] overflow-hidden rounded-[2rem] border border-slate-800 bg-slate-950">
       <MapContainer center={[24.0274, 85.3704]} zoom={13} scrollWheelZoom className="h-full w-full">
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <HeatLayer points={heatmap} />
-        {mappableReports.map((report) => (
+        <FitToReports reports={reports} />
+        {displayReports.map((report) => (
           <CircleMarker
             key={report.id}
-            center={[report.latitude as number, report.longitude as number]}
-            radius={6}
+            center={[report.displayLatitude, report.displayLongitude]}
+            radius={8}
             pathOptions={{
               color:
                 report.sentimentLabel === "angry"
@@ -71,15 +126,24 @@ export function DashboardMap({
                   : report.sentimentLabel === "happy"
                     ? "#22c55e"
                     : "#3b82f6",
-              fillOpacity: 0.9,
+              fillOpacity: 0.92,
+              weight: 2,
             }}
           >
             <Popup>
-              <div className="space-y-1 text-sm">
+              <div className="space-y-2 text-sm">
                 <p className="font-semibold">{report.category ?? "General issue"}</p>
+                <p>{report.description ?? "No description provided."}</p>
                 <p>Status: {report.status}</p>
                 <p>Ward: {report.wardNumber ?? "Unknown"}</p>
-                <p>{report.description ?? "No description provided."}</p>
+                {report.nearbyCount > 1 ? (
+                  <p className="text-xs text-slate-500">
+                    Nearby complaints are slightly offset so close reports remain visible.
+                  </p>
+                ) : null}
+                <Link href={`/mayor/reports/${report.id}`} className="inline-flex text-blue-600 underline">
+                  Open full complaint
+                </Link>
               </div>
             </Popup>
           </CircleMarker>
@@ -88,3 +152,4 @@ export function DashboardMap({
     </div>
   );
 }
+

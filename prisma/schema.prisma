@@ -8,16 +8,23 @@ datasource db {
 }
 
 model Report {
-  id             String   @id @default(uuid())
-  createdAt      DateTime @default(now())
-  imageUrl       String?
-  description    String?
-  category       String?
-  severity       Float?
-  latitude       Float?
-  longitude      Float?
-  wardNumber     Int?
-  sentimentScore Float?
-  sentimentLabel String?
-  status         String   @default("Pending")
+  id                String   @id @default(uuid())
+  createdAt         DateTime @default(now())
+  imageUrl          String?
+  description       String?
+  category          String?
+  severity          Float?
+  latitude          Float?
+  longitude         Float?
+  wardNumber        Int?
+  sentimentScore    Float?
+  sentimentLabel    String?
+  aiSummary         String?
+  aiActionRequired  String?
+  aiDepartment      String?
+  aiPriorityLabel   String?
+  aiVisualSummary   String?
+  aiConfidence      Float?
+  aiKeySignals      String[] @default([])
+  status            String   @default("Pending")
 }

@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import dynamic from "next/dynamic";
-import { Activity, AlertTriangle, BarChart3, MapPinned, RefreshCcw } from "lucide-react";
+import { Activity, AlertTriangle, ArrowRight, BarChart3, MapPinned, RefreshCcw } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -24,10 +25,12 @@ function StatCard({
   label,
   value,
   icon: Icon,
+  note,
 }: {
   label: string;
   value: string | number;
   icon: React.ComponentType<{ className?: string }>;
+  note: string;
 }) {
   return (
     <div className="rounded-[1.6rem] border border-slate-800 bg-slate-900/70 p-5">
@@ -36,19 +39,14 @@ function StatCard({
         <Icon className="h-5 w-5 text-blue-300" />
       </div>
       <p className="mt-4 text-3xl font-semibold text-white">{value}</p>
+      <p className="mt-2 text-xs leading-5 text-slate-500">{note}</p>
     </div>
   );
 }
 
 function sentimentColor(value: number) {
-  if (value < -0.15) {
-    return "bg-red-500/80";
-  }
-
-  if (value > 0.15) {
-    return "bg-emerald-500/80";
-  }
-
+  if (value < -0.15) return "bg-red-500/80";
+  if (value > 0.15) return "bg-emerald-500/80";
   return "bg-blue-400/80";
 }
 
@@ -145,7 +143,7 @@ export function MayorDashboard() {
             </p>
             <h2 className="mt-2 text-3xl font-semibold text-white">JanCase Hazaribagh Control Room</h2>
             <p className="mt-2 max-w-2xl text-sm text-slate-300">
-              Live heatmap, ward sentiment, and the newest civic signals refreshed by polling every 7 seconds.
+              Live heatmap, ward sentiment, complaint detail drill-down, and close-report visibility refreshed every 7 seconds.
             </p>
           </div>
           <div className="inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/70 px-4 py-2 text-sm text-slate-300">
@@ -161,14 +159,19 @@ export function MayorDashboard() {
         ) : null}
 
         <div className="grid gap-4 lg:grid-cols-4">
-          <StatCard label="Total Reports" value={data?.stats.totalReports ?? "--"} icon={BarChart3} />
-          <StatCard label="Pending Issues" value={data?.stats.pendingReports ?? "--"} icon={AlertTriangle} />
-          <StatCard label="Heatmap Points" value={data?.stats.heatmap.length ?? "--"} icon={MapPinned} />
-          <StatCard label="Tracked Wards" value={data?.stats.wardSentiment.length ?? "--"} icon={Activity} />
+          <StatCard label="Total Reports" value={data?.stats.totalReports ?? "--"} icon={BarChart3} note="All complaints received so far." />
+          <StatCard label="Pending Issues" value={data?.stats.pendingReports ?? "--"} icon={AlertTriangle} note="Currently unresolved civic issues." />
+          <StatCard label="Heatmap Points" value={data?.stats.heatmap.length ?? "--"} icon={MapPinned} note="Heat blobs may merge when complaints are geographically close." />
+          <StatCard label="Tracked Wards" value={data?.stats.wardSentiment.length ?? "--"} icon={Activity} note="Wards with at least one sentiment-bearing report." />
         </div>
 
-        <div className="mt-6 grid gap-6 xl:grid-cols-[1.5fr_0.9fr]">
-          <DashboardMap reports={data?.reports ?? []} heatmap={data?.stats.heatmap ?? []} />
+        <div className="mt-6 grid gap-6 xl:grid-cols-[1.45fr_0.95fr]">
+          <div className="space-y-4">
+            <DashboardMap reports={data?.reports ?? []} heatmap={data?.stats.heatmap ?? []} />
+            <div className="rounded-[1.4rem] border border-slate-800 bg-slate-900/70 px-4 py-3 text-xs leading-6 text-slate-400">
+              Nearby complaints are intentionally offset a little on the map so separate submissions remain clickable even when citizens submit from nearly the same location.
+            </div>
+          </div>
 
           <div className="space-y-6">
             <section className="rounded-[1.8rem] border border-slate-800 bg-slate-900/70 p-5">
@@ -184,10 +187,7 @@ export function MayorDashboard() {
                       <div
                         className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-blue-400"
                         style={{
-                          width: `${Math.max(
-                            12,
-                            data ? (item.count / Math.max(data.stats.totalReports, 1)) * 100 : 0,
-                          )}%`,
+                          width: `${Math.max(12, data ? (item.count / Math.max(data.stats.totalReports, 1)) * 100 : 0)}%`,
                         }}
                       />
                     </div>
@@ -200,20 +200,14 @@ export function MayorDashboard() {
               <h3 className="text-lg font-semibold text-white">Ward sentiment</h3>
               <div className="mt-4 space-y-3">
                 {(data?.stats.wardSentiment ?? []).map((ward) => (
-                  <div
-                    key={ward.wardNumber}
-                    className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3"
-                  >
+                  <div key={ward.wardNumber} className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 px-4 py-3">
                     <div>
                       <p className="text-sm font-medium text-white">Ward {ward.wardNumber}</p>
                       <p className="text-xs text-slate-400">{ward.reportCount} reports</p>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="h-3 w-24 overflow-hidden rounded-full bg-slate-800">
-                        <div
-                          className={`h-full rounded-full ${sentimentColor(ward.averageSentiment)}`}
-                          style={{ width: `${Math.min(100, Math.abs(ward.averageSentiment) * 100 + 20)}%` }}
-                        />
+                        <div className={`h-full rounded-full ${sentimentColor(ward.averageSentiment)}`} style={{ width: `${Math.min(100, Math.abs(ward.averageSentiment) * 100 + 20)}%` }} />
                       </div>
                       <span className="text-sm text-slate-200">{ward.averageSentiment.toFixed(2)}</span>
                     </div>
@@ -225,12 +219,16 @@ export function MayorDashboard() {
         </div>
 
         <section className="mt-6 rounded-[1.8rem] border border-slate-800 bg-slate-900/70 p-5">
-          <h3 className="text-lg font-semibold text-white">Recent reports</h3>
+          <div className="flex items-center justify-between gap-4">
+            <h3 className="text-lg font-semibold text-white">Recent complaints</h3>
+            <p className="text-xs text-slate-500">Open any complaint for image, location, and AI triage details.</p>
+          </div>
           <div className="mt-4 grid gap-3 lg:grid-cols-2">
             {recentReports.map((report) => (
-              <article
+              <Link
                 key={report.id}
-                className="rounded-3xl border border-slate-800 bg-slate-950/70 p-4 text-sm text-slate-300"
+                href={`/mayor/reports/${report.id}`}
+                className="group rounded-3xl border border-slate-800 bg-slate-950/70 p-4 text-sm text-slate-300 transition hover:border-blue-400/50 hover:bg-slate-950"
               >
                 <div className="mb-2 flex items-center justify-between gap-3">
                   <span className="rounded-full bg-slate-800 px-3 py-1 text-xs font-medium text-slate-100">
@@ -239,12 +237,16 @@ export function MayorDashboard() {
                   <span className="text-xs text-slate-500">{new Date(report.createdAt).toLocaleString()}</span>
                 </div>
                 <p className="text-slate-100">{report.description ?? "No description submitted."}</p>
-                <div className="mt-3 flex items-center gap-2 text-xs text-slate-400">
+                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-400">
                   <span>Status: {report.status}</span>
                   <span>Ward: {report.wardNumber ?? "Unknown"}</span>
                   <span>Sentiment: {report.sentimentLabel ?? "neutral"}</span>
                 </div>
-              </article>
+                <div className="mt-4 inline-flex items-center gap-2 text-sm text-blue-300 transition group-hover:text-blue-200">
+                  View complaint details
+                  <ArrowRight className="h-4 w-4" />
+                </div>
+              </Link>
             ))}
           </div>
         </section>
@@ -252,4 +254,3 @@ export function MayorDashboard() {
     </div>
   );
 }
-

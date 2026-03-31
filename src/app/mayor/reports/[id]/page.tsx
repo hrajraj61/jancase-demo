@@ -28,24 +28,16 @@ export default async function MayorReportDetailPage({
         <div className="flex flex-col gap-4 rounded-[2rem] border border-slate-800 bg-slate-950/80 p-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.3em] text-slate-400">Complaint Detail</p>
-            <h1 className="mt-2 text-3xl font-semibold text-white">{report.category ?? "General Complaint"}</h1>
+            <h1 className="mt-2 text-3xl font-semibold text-white">{report.aiSummary ?? report.category ?? "General Complaint"}</h1>
             <p className="mt-3 text-sm text-slate-300">Created {new Date(report.createdAt).toLocaleString()}</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link
-              href="/mayor"
-              className="inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/70 px-4 py-2 text-sm text-slate-100 transition hover:bg-slate-800"
-            >
+            <Link href="/mayor" className="inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/70 px-4 py-2 text-sm text-slate-100 transition hover:bg-slate-800">
               <ArrowLeft className="h-4 w-4" />
               Back to dashboard
             </Link>
             {report.googleMapsUrl ? (
-              <a
-                href={report.googleMapsUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-400"
-              >
+              <a href={report.googleMapsUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-400">
                 <ExternalLink className="h-4 w-4" />
                 Open in Maps
               </a>
@@ -77,9 +69,7 @@ export default async function MayorReportDetailPage({
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
                   <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Location</p>
-                  <p className="mt-2 text-slate-100">
-                    {report.hasLocation ? `${report.latitude}, ${report.longitude}` : "Location not provided"}
-                  </p>
+                  <p className="mt-2 text-slate-100">{report.hasLocation ? `${report.latitude}, ${report.longitude}` : "Location not provided"}</p>
                 </div>
                 <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
                   <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Ward / Status</p>
@@ -97,17 +87,53 @@ export default async function MayorReportDetailPage({
               </div>
               <div className="mt-4 grid gap-3">
                 <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Category</p>
-                  <p className="mt-2 text-base text-slate-100">{report.category ?? "General"}</p>
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">AI Summary</p>
+                  <p className="mt-2 text-base text-slate-100">{report.aiSummary ?? "No summary generated"}</p>
                 </div>
-                <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
-                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Severity</p>
-                  <p className="mt-2 text-base text-slate-100">{report.severity?.toFixed(2) ?? "0.00"}</p>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Category</p>
+                    <p className="mt-2 text-base text-slate-100">{report.category ?? "General"}</p>
+                  </div>
+                  <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Priority</p>
+                    <p className="mt-2 text-base text-slate-100">{report.aiPriorityLabel ?? "Medium"}</p>
+                  </div>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Severity</p>
+                    <p className="mt-2 text-base text-slate-100">{report.severity?.toFixed(2) ?? "0.00"}</p>
+                  </div>
+                  <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Confidence</p>
+                    <p className="mt-2 text-base text-slate-100">{report.aiConfidence?.toFixed(2) ?? "0.00"}</p>
+                  </div>
                 </div>
                 <div className={`rounded-2xl border p-4 ${sentimentTone(report.sentimentLabel)}`}>
                   <p className="text-xs uppercase tracking-[0.2em] text-current/70">Sentiment</p>
                   <p className="mt-2 text-base capitalize text-current">{report.sentimentLabel ?? "neutral"}</p>
                   <p className="mt-1 text-sm text-current/80">Score {report.sentimentScore?.toFixed(2) ?? "0.00"}</p>
+                </div>
+                <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Department</p>
+                  <p className="mt-2 text-base text-slate-100">{report.aiDepartment ?? "Municipal Operations"}</p>
+                </div>
+                <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Action Required</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-100">{report.aiActionRequired ?? "Inspect and route to the correct team."}</p>
+                </div>
+                <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Visual Summary</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-100">{report.aiVisualSummary ?? "No visual inference available."}</p>
+                </div>
+                <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Detected Signals</p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {report.aiKeySignals.length > 0 ? report.aiKeySignals.map((signal) => (
+                      <span key={signal} className="rounded-full border border-slate-700 bg-slate-800 px-3 py-1 text-xs text-slate-200">{signal}</span>
+                    )) : <span className="text-sm text-slate-400">No signal tags generated.</span>}
+                  </div>
                 </div>
               </div>
             </section>
@@ -123,12 +149,7 @@ export default async function MayorReportDetailPage({
                   : "No geolocation was attached to this complaint. Use nearby ward and description context instead."}
               </p>
               {report.googleMapsUrl ? (
-                <a
-                  href={report.googleMapsUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-4 inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-sm text-slate-100 transition hover:bg-slate-800"
-                >
+                <a href={report.googleMapsUrl} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900 px-4 py-2 text-sm text-slate-100 transition hover:bg-slate-800">
                   <ExternalLink className="h-4 w-4" />
                   View pinpointed location
                 </a>

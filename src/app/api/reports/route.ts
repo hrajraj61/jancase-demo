@@ -56,6 +56,13 @@ export async function POST(request: Request) {
         severity: analysis.severity,
         sentimentLabel: analysis.sentimentLabel,
         sentimentScore: analysis.sentimentScore,
+        aiSummary: analysis.summary,
+        aiActionRequired: analysis.actionRequired,
+        aiDepartment: analysis.department,
+        aiPriorityLabel: analysis.priorityLabel,
+        aiVisualSummary: analysis.visualSummary,
+        aiConfidence: analysis.confidence,
+        aiKeySignals: analysis.keySignals,
       },
     });
 

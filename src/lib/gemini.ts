@@ -7,6 +7,13 @@ export const FALLBACK_ANALYSIS: AIAnalysis = {
   severity: 0.5,
   sentimentLabel: "neutral",
   sentimentScore: 0,
+  summary: "Citizen issue requires review.",
+  actionRequired: "Inspect the site and assign a municipal response team.",
+  department: "Municipal Operations",
+  priorityLabel: "Medium",
+  visualSummary: "No reliable visual interpretation available.",
+  confidence: 0.45,
+  keySignals: ["manual review"],
 };
 
 function clamp(value: number, min: number, max: number) {
@@ -21,12 +28,37 @@ function normalizeSentimentLabel(value: string): SentimentLabel {
   return "neutral";
 }
 
+function normalizeString(value: unknown, fallback: string) {
+  return typeof value === "string" && value.trim() ? value.trim() : fallback;
+}
+
+function normalizeStringArray(value: unknown) {
+  if (!Array.isArray(value)) {
+    return FALLBACK_ANALYSIS.keySignals;
+  }
+
+  const normalized = value
+    .filter((item): item is string => typeof item === "string")
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .slice(0, 6);
+
+  return normalized.length > 0 ? normalized : FALLBACK_ANALYSIS.keySignals;
+}
+
 function sanitizeAnalysis(value: Record<string, unknown>): AIAnalysis {
   return {
-    category: typeof value.category === "string" && value.category.trim() ? value.category.trim() : "General",
+    category: normalizeString(value.category, "General"),
     severity: clamp(Number(value.severity ?? 0.5), 0, 1),
     sentimentLabel: normalizeSentimentLabel(String(value.sentimentLabel ?? "neutral").toLowerCase()),
     sentimentScore: clamp(Number(value.sentimentScore ?? 0), -1, 1),
+    summary: normalizeString(value.summary, FALLBACK_ANALYSIS.summary),
+    actionRequired: normalizeString(value.actionRequired, FALLBACK_ANALYSIS.actionRequired),
+    department: normalizeString(value.department, FALLBACK_ANALYSIS.department),
+    priorityLabel: normalizeString(value.priorityLabel, FALLBACK_ANALYSIS.priorityLabel),
+    visualSummary: normalizeString(value.visualSummary, FALLBACK_ANALYSIS.visualSummary),
+    confidence: clamp(Number(value.confidence ?? FALLBACK_ANALYSIS.confidence), 0, 1),
+    keySignals: normalizeStringArray(value.keySignals),
   };
 }
 
@@ -52,13 +84,13 @@ export async function analyzeCivicIssue(payload: ReportPayload): Promise<AIAnaly
   }
 
   const prompt = [
-    "Analyze this civic issue.",
+    "Analyze this civic complaint from Hazaribagh and infer from both the description and the image URL if available.",
     "",
     `Image URL: ${payload.imageUrl ?? "None"}`,
     `Description: ${payload.description ?? "None"}`,
     "",
     "Return JSON only in this exact shape:",
-    '{"category":"Waste | Roads | Water | Electricity | Other","severity":0,"sentimentLabel":"angry | neutral | happy","sentimentScore":0}',
+    '{"category":"Waste | Roads | Water | Electricity | Other | General","severity":0.5,"sentimentLabel":"angry | neutral | happy","sentimentScore":0,"summary":"short summary in under 14 words","actionRequired":"first municipal action","department":"owning team or department","priorityLabel":"High | Medium | Low","visualSummary":"what the image seems to show or lack","confidence":0.5,"keySignals":["signal 1","signal 2"]}',
   ].join("\n");
 
   for (let attempt = 0; attempt < 5; attempt += 1) {

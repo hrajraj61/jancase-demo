@@ -5,6 +5,13 @@ export type AIAnalysis = {
   severity: number;
   sentimentLabel: SentimentLabel;
   sentimentScore: number;
+  summary: string;
+  actionRequired: string;
+  department: string;
+  priorityLabel: string;
+  visualSummary: string;
+  confidence: number;
+  keySignals: string[];
 };
 
 export type ReportPayload = {
@@ -28,6 +35,13 @@ export type DashboardReport = {
   wardNumber: number | null;
   sentimentScore: number | null;
   sentimentLabel: string | null;
+  aiSummary: string | null;
+  aiActionRequired: string | null;
+  aiDepartment: string | null;
+  aiPriorityLabel: string | null;
+  aiVisualSummary: string | null;
+  aiConfidence: number | null;
+  aiKeySignals: string[];
   status: string;
 };
 
