@@ -450,6 +450,8 @@ export function StreetMapView() {
   const [status, setStatus] = useState<RenderStatus>("idle");
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [progress, setProgress] = useState<RenderProgress>({ rendered: 0, total: 0 });
+  const [isLoadPanelOpen, setIsLoadPanelOpen] = useState(true);
+  const [reloadKey, setReloadKey] = useState(0);
 
   const completion = useMemo(() => {
     if (progress.total === 0) {
@@ -458,6 +460,14 @@ export function StreetMapView() {
 
     return Math.round((progress.rendered / progress.total) * 100);
   }, [progress.rendered, progress.total]);
+
+  const isFullyLoaded = useMemo(() => {
+    return (
+      status === "ready" &&
+      progress.total > 0 &&
+      progress.rendered >= progress.total
+    );
+  }, [progress.rendered, progress.total, status]);
 
   const statusLabel = useMemo(() => {
     if (status === "loading") {
@@ -500,6 +510,20 @@ export function StreetMapView() {
     setStatusMessage(message ?? null);
   }, []);
 
+  const handleResetData = useCallback(() => {
+    setStatus("idle");
+    setStatusMessage(null);
+    setProgress({ rendered: 0, total: 0 });
+    setIsLoadPanelOpen(false);
+    setReloadKey((current) => current + 1);
+  }, []);
+
+  useEffect(() => {
+    if (isFullyLoaded) {
+      setIsLoadPanelOpen(false);
+    }
+  }, [isFullyLoaded]);
+
   return (
     <section className="relative h-screen w-screen overflow-hidden bg-slate-950">
       <MapContainer
@@ -517,6 +541,7 @@ export function StreetMapView() {
         <ZoomControl position="bottomright" />
         <MapTools />
         <LuminosityRoadLayer
+          key={reloadKey}
           onProgressChange={handleProgressChange}
           onStatusChange={handleStatusChange}
         />
@@ -524,33 +549,59 @@ export function StreetMapView() {
 
       <div className="pointer-events-none absolute inset-x-3 top-3 z-[1000] flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="glass-overlay pointer-events-auto w-full rounded-2xl px-4 py-3 shadow-xl sm:w-auto sm:min-w-[320px] sm:max-w-[560px]">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-200">
-            OpenStreetMap Night View
-          </p>
-          <h1 className="mt-1 text-lg font-semibold text-slate-50">Street Luminosity</h1>
-          <p className="mt-1 text-xs leading-relaxed text-slate-200/95 sm:text-sm">This map tracks street-light condition and overall lighting condition across every street of Hazaribagh.</p>
+          <button
+            type="button"
+            onClick={() => setIsLoadPanelOpen((current) => !current)}
+            className="w-full text-left"
+          >
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-200">
+              OpenStreetMap Night View
+            </p>
+            <h1 className="mt-1 text-lg font-semibold text-slate-50">Street Luminosity</h1>
+          </button>
 
-          <div className={`mt-3 inline-flex rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold ${statusTone}`}>
-            {statusLabel}
-          </div>
+          {isLoadPanelOpen ? (
+            <>
+              <p className="mt-1 text-xs leading-relaxed text-slate-200/95 sm:text-sm">
+                This map tracks street-light condition and overall lighting condition across
+                every street of Hazaribagh.
+              </p>
 
-          <div className="mt-3">
-            <div className="mb-1 flex items-center justify-between text-xs font-medium text-slate-200">
-              <span>Rendered segments</span>
-              <span>
-                {progress.rendered}/{progress.total || "..."}
-              </span>
-            </div>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-white/20">
               <div
-                className="h-full rounded-full bg-white/80 transition-all duration-200"
-                style={{ width: `${completion}%` }}
-              />
-            </div>
-          </div>
+                className={`mt-3 inline-flex rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold ${statusTone}`}
+              >
+                {statusLabel}
+              </div>
 
-          {statusMessage ? (
-            <p className="mt-2 text-xs font-medium text-rose-200">{statusMessage}</p>
+              <div className="mt-3">
+                <div className="mb-1 flex items-center justify-between text-xs font-medium text-slate-200">
+                  <span>Rendered segments</span>
+                  <span>
+                    {progress.rendered}/{progress.total || "..."}
+                  </span>
+                </div>
+                <div className="h-2 w-full overflow-hidden rounded-full bg-white/20">
+                  <div
+                    className="h-full rounded-full bg-white/80 transition-all duration-200"
+                    style={{ width: `${completion}%` }}
+                  />
+                </div>
+              </div>
+
+              {statusMessage ? (
+                <p className="mt-2 text-xs font-medium text-rose-200">{statusMessage}</p>
+              ) : null}
+
+              <div className="mt-3 flex">
+                <button
+                  type="button"
+                  onClick={handleResetData}
+                  className="inline-flex items-center rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-slate-100 transition hover:bg-white/20"
+                >
+                  Reset Data
+                </button>
+              </div>
+            </>
           ) : null}
         </div>
 
@@ -566,7 +617,7 @@ export function StreetMapView() {
       <div className="pointer-events-none absolute inset-x-3 bottom-3 z-[1000] flex justify-center sm:justify-start">
         <section className="glass-overlay pointer-events-auto w-[min(94vw,460px)] rounded-2xl p-4 shadow-xl sm:w-[420px]">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-200">
-            Luminosity Gradient
+            Luminosity Level
           </p>
           <div
             className="mt-2 h-2.5 w-full rounded-full"
@@ -575,29 +626,9 @@ export function StreetMapView() {
                 "linear-gradient(90deg, #0A2AFF 0%, #00E5FF 33%, #7CFF00 66%, #FFF700 100%)",
             }}
           />
-          <div className="mt-3 grid grid-cols-1 gap-x-4 gap-y-2 text-xs font-medium text-slate-100 sm:grid-cols-2">
-            <div className="flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#0A2AFF]" />
-              Low (#0A2AFF)
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#00E5FF]" />
-              Cyan (#00E5FF)
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#7CFF00]" />
-              Medium (#7CFF00)
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-[#FFF700]" />
-              High (#FFF700)
-            </div>
-          </div>
+         
         </section>
       </div>
     </section>
   );
 }
-
-
-
