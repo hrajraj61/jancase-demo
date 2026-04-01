@@ -111,7 +111,7 @@ export function SentimentMap({ reports, className }: SentimentMapProps) {
         {displayReports.map((report) => (
           <Marker
             key={report.id}
-            center={[report.displayLatitude, report.displayLongitude]}
+            position={[report.displayLatitude, report.displayLongitude]}
             icon={sentimentIcon(sentimentEmoji(report))}
           >
             <Popup>

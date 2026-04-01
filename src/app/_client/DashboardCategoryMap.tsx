@@ -208,7 +208,7 @@ export function DashboardCategoryMap({
           return (
             <Marker
               key={report.id}
-              center={[report.displayLatitude, report.displayLongitude]}
+              position={[report.displayLatitude, report.displayLongitude]}
               icon={categoryDotIcon(markerColor)}
             >
               <Popup>
