@@ -1,13 +1,15 @@
 "use client";
 
+import { divIcon, point } from "leaflet";
 import { useEffect, useMemo } from "react";
-import { CircleMarker, MapContainer, Popup, TileLayer, useMap } from "react-leaflet";
+import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
 import type { DashboardReport } from "@/lib/types";
 
 type SentimentMapProps = {
   reports: DashboardReport[];
+  className?: string;
 };
 
 type DisplayReport = DashboardReport & {
@@ -71,27 +73,35 @@ function createDisplayReports(reports: DashboardReport[]) {
   return placed;
 }
 
-function markerColor(report: DashboardReport) {
+function sentimentEmoji(report: DashboardReport) {
   if (report.sentimentLabel === "angry") {
-    return "#ef4444";
+    return "😡";
   }
   if (report.sentimentLabel === "happy") {
-    return "#22c55e";
+    return "🙂";
   }
-  return "#3b82f6";
+  return "😐";
 }
 
-function markerRadius(report: DashboardReport) {
-  const score = Math.abs(report.sentimentScore ?? 0);
-  const intensity = Math.max(0.15, Math.min(1, score));
-  return 6 + intensity * 8;
+function sentimentIcon(emoji: string) {
+  return divIcon({
+    className: "",
+    html: `<div style="width:26px;height:26px;border-radius:999px;background:rgba(255,255,255,0.96);display:flex;align-items:center;justify-content:center;font-size:15px;line-height:1;border:1px solid rgba(148,163,184,0.5);box-shadow:0 6px 16px rgba(15,23,42,0.2);">${emoji}</div>`,
+    iconSize: point(26, 26),
+    iconAnchor: point(13, 13),
+    popupAnchor: point(0, -10),
+  });
 }
 
-export function SentimentMap({ reports }: SentimentMapProps) {
+export function SentimentMap({ reports, className }: SentimentMapProps) {
   const displayReports = useMemo(() => createDisplayReports(reports), [reports]);
 
   return (
-    <div className="h-[26rem] overflow-hidden rounded-[2rem] border border-slate-800 bg-slate-950">
+    <div
+      className={
+        className ?? "h-[26rem] overflow-hidden rounded-[2rem] border border-slate-800 bg-slate-950"
+      }
+    >
       <MapContainer center={[24.0274, 85.3704]} zoom={13} scrollWheelZoom className="h-full w-full">
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -99,21 +109,17 @@ export function SentimentMap({ reports }: SentimentMapProps) {
         />
         <FitToReports reports={reports} />
         {displayReports.map((report) => (
-          <CircleMarker
+          <Marker
             key={report.id}
             center={[report.displayLatitude, report.displayLongitude]}
-            radius={markerRadius(report)}
-            pathOptions={{
-              color: markerColor(report),
-              fillColor: markerColor(report),
-              fillOpacity: 0.72,
-              weight: 2,
-            }}
+            icon={sentimentIcon(sentimentEmoji(report))}
           >
             <Popup>
               <div className="space-y-1 text-sm">
                 <p className="font-semibold">{report.category ?? "General issue"}</p>
-                <p className="capitalize">Sentiment: {report.sentimentLabel ?? "neutral"}</p>
+                <p className="capitalize">
+                  Sentiment: {sentimentEmoji(report)} {report.sentimentLabel ?? "neutral"}
+                </p>
                 <p>Score: {(report.sentimentScore ?? 0).toFixed(2)}</p>
                 <p>{report.aiSummary ?? "No AI summary available"}</p>
                 {report.nearbyCount > 1 ? (
@@ -123,7 +129,7 @@ export function SentimentMap({ reports }: SentimentMapProps) {
                 ) : null}
               </div>
             </Popup>
-          </CircleMarker>
+          </Marker>
         ))}
       </MapContainer>
     </div>

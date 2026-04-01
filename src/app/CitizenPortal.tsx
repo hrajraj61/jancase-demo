@@ -51,14 +51,6 @@ const LocationPickerMap = dynamic(
   { ssr: false },
 );
 
-function AppBadge({ label }: { label: string }) {
-  return (
-    <span className="rounded-full border border-slate-200 bg-white/60 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-600">
-      {label}
-    </span>
-  );
-}
-
 export function CitizenPortal() {
   const [description, setDescription] = useState("");
   const [coordinates, setCoordinates] = useState<Coordinates>(initialCoordinates);
@@ -232,88 +224,100 @@ export function CitizenPortal() {
 
   return (
     <>
-      <div className="relative mx-auto w-full max-w-6xl overflow-hidden rounded-[2rem] border border-white/40 bg-white/30 shadow-[0_8px_60px_rgba(0,0,0,0.08)] backdrop-blur-2xl">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(168,85,247,0.06),transparent_22%),linear-gradient(180deg,rgba(255,255,255,0.4),rgba(255,255,255,0.1))]" />
-        <div className="relative border-b border-slate-200/60 px-4 py-4 sm:px-6">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-600/20">
-                <ShieldAlert className="h-5 w-5" />
+      <div className="pb-24 md:pb-0">
+        <div className="relative mx-auto w-full max-w-6xl overflow-hidden rounded-[2rem] border border-white/40 bg-white/30 shadow-[0_8px_60px_rgba(0,0,0,0.08)] backdrop-blur-2xl">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(168,85,247,0.06),transparent_22%),linear-gradient(180deg,rgba(255,255,255,0.4),rgba(255,255,255,0.1))]" />
+          <div className="relative border-b border-slate-200/60 px-4 py-4 sm:px-6">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-600/20">
+                  <ShieldAlert className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-[11px] uppercase tracking-[0.3em] text-slate-500">JanCase</p>
+                  <h1 className="text-xl font-semibold text-slate-800 sm:text-2xl">
+                    Hazaribagh Municipality
+                  </h1>
+                </div>
               </div>
-              <div>
-                <p className="text-[11px] uppercase tracking-[0.3em] text-slate-500">JanCase</p>
-                <h1 className="text-xl font-semibold text-slate-800 sm:text-2xl">
-                  Hazaribagh Municipality
-                </h1>
-              </div>
-            </div>
 
-            <nav className="flex flex-wrap gap-2 rounded-2xl border border-slate-200/60 bg-white/40 p-1">
-              <button
-                type="button"
-                className="inline-flex items-center gap-2 rounded-xl bg-slate-800 px-4 py-2 text-sm font-medium text-white shadow-sm"
-              >
-                <BellRing className="h-4 w-4" />
-                Citizen Portal
-              </button>
-              <Link
-                href="/mayor"
-                className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-white/60 hover:text-slate-900"
-              >
-                <LayoutDashboard className="h-4 w-4" />
-                Mayor Dashboard
-              </Link>
-              <Link
-                href="/streetmap"
-                className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-white/60 hover:text-slate-900"
-              >
-                <MapPinned className="h-4 w-4" />
-                Street Map
-              </Link>
-            </nav>
+              <nav className="hidden items-center gap-1 rounded-full border border-slate-200/80 bg-white/70 p-1 shadow-sm md:flex">
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-slate-800 px-2.5 py-1.5 text-xs font-medium text-white shadow-sm"
+                >
+                  <BellRing className="h-3.5 w-3.5" />
+                  Citizen Portal
+                </button>
+                <Link
+                  href="/mayor"
+                  className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-white/60 hover:text-slate-900"
+                >
+                  <LayoutDashboard className="h-3.5 w-3.5" />
+                  Mayor Dashboard
+                </Link>
+                <Link
+                  href="/streetmap"
+                  className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-white/60 hover:text-slate-900"
+                >
+                  <MapPinned className="h-3.5 w-3.5" />
+                  Street Map
+                </Link>
+              </nav>
+            </div>
           </div>
-        </div>
 
-        <div className="relative flex items-center justify-center gap-3 border-b border-slate-200/40 bg-white/20 px-4 py-2.5">
-          <a
-            href="https://www.cloudivion.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2.5 opacity-80 transition hover:opacity-100"
-          >
-            <Image
-              src="https://www.cloudivion.com/images/cloudivion-logo.png"
-              alt="Cloudivion"
-              width={50}
-              height={50}
-              className="h-[50px] w-auto object-contain"
-            />
-            <span className="text-xs text-slate-500">
-              Proof of Concept by <span className="font-semibold text-slate-700">cloudivion.com</span>
-            </span>
-          </a>
-        </div>
+          <div className="relative flex items-center justify-center gap-3 border-b border-slate-200/40 bg-white/20 px-4 py-2.5">
+            <a
+              href="https://www.cloudivion.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2.5 opacity-80 transition hover:opacity-100"
+            >
+              <Image
+                src="https://www.cloudivion.com/images/cloudivion-logo.png"
+                alt="Cloudivion"
+                width={50}
+                height={50}
+                className="h-[50px] w-auto object-contain"
+              />
+              <span className="text-xs text-slate-500">
+                Proof of Concept by <span className="font-semibold text-slate-700">cloudivion.com</span>
+              </span>
+            </a>
+          </div>
 
-        <div className="relative grid gap-0 lg:grid-cols-[0.95fr_1.05fr]">
-          <section className="border-b border-slate-200/40 p-4 sm:p-5 lg:border-b-0 lg:border-r lg:p-6">
-            <div className="mb-5 flex flex-wrap items-center gap-2">
-              <AppBadge label="Intelligent City Case Filer" />
-              <AppBadge label="Citizen to Mayor" />
-              <AppBadge label="AI triage" />
-              <AppBadge label="Mayor AI Initiative" />
-            </div>
+          <div className="relative grid gap-0 lg:grid-cols-[0.95fr_1.05fr]">
+            <section className="order-1 border-b border-slate-200/40 p-4 sm:p-5 lg:border-b-0 lg:border-r lg:p-6">
+              <section className="mb-5 rounded-[1.6rem] border border-white/50 bg-white/55 p-3 backdrop-blur-xl sm:p-4">
+                <div className="grid grid-cols-3 items-start gap-2 sm:flex sm:items-center sm:gap-3">
+                  <div className="relative col-span-1 h-20 overflow-hidden rounded-2xl border border-slate-200 sm:h-[95px] sm:w-[95px] sm:shrink-0">
+                    <Image src="/arvind.jpeg" alt="Mayor Arvind Rana" fill className="object-cover" />
+                  </div>
+                  <div className="col-span-2 min-w-0">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-blue-700 sm:text-[11px] sm:tracking-[0.18em]">
+                      Know Your Mayor
+                    </p>
+                    <h3 className="mt-0.5 text-xs font-semibold text-slate-800 sm:text-sm">Arvind Rana</h3>
+                    <p className="mt-1 text-[10px] leading-4 text-slate-600 sm:text-xs sm:leading-5">
+                      Arvind Kumar Rana is the elected Mayor of Hazaribagh, focused on transparent,
+                      citizen-first governance and faster issue resolution.
+                    </p>
+                  </div>
+                </div>
+              </section>
 
-            <div className="mb-6">
-              <h2 className="text-3xl font-semibold leading-tight text-slate-800 sm:text-4xl">
-                Report a city issue in one screen.
-              </h2>
-              <p className="mt-3 max-w-xl text-sm leading-7 text-slate-500">
-                Add a photo, description, and location. You can use GPS, enter coordinates, or pin
-                location manually on the map.
-              </p>
-            </div>
+              <div className="mb-6">
+                <h2 className="text-3xl font-semibold leading-tight text-slate-800 sm:text-4xl">
+                  Report a city issue in one screen.
+                </h2>
+                <p className="mt-3 max-w-xl text-sm leading-7 text-slate-500">
+                  Add a photo, description, and location. You can use GPS, enter coordinates, or pin
+                  location manually on the map.
+                </p>
+              </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4">
               <div className="rounded-[1.6rem] border border-white/50 bg-white/40 p-4 backdrop-blur-xl">
                 <label className="mb-3 flex items-center gap-2 text-sm font-medium text-slate-700">
                   <ImagePlus className="h-4 w-4" />
@@ -394,6 +398,55 @@ export function CitizenPortal() {
                 </div>
               </div>
 
+              <div className="rounded-[1.8rem] border border-white/50 bg-white/40 p-4 backdrop-blur-xl md:hidden">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">Live Preview</p>
+                    <h3 className="mt-1 text-lg font-semibold text-slate-800">Citizen submission card</h3>
+                  </div>
+                  <div
+                    className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                      canSubmit ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-500"
+                    }`}
+                  >
+                    {canSubmit ? "Ready" : "Waiting"}
+                  </div>
+                </div>
+
+                <div className="mt-4 overflow-hidden rounded-[1.6rem] border border-slate-200 bg-white/70">
+                  <div className="relative h-64">
+                    {previewUrl ? (
+                      <Image src={previewUrl} alt="Complaint preview" fill unoptimized className="object-cover" />
+                    ) : (
+                      <div className="flex h-full items-center justify-center bg-slate-50/50 px-8 text-center text-sm text-slate-400">
+                        Upload a photo to preview it here. Complaints can still be submitted without an image.
+                      </div>
+                    )}
+                  </div>
+                  <div className="space-y-3 p-4">
+                    <div className="flex flex-wrap gap-2">
+                      <span className="rounded-full border border-slate-200 bg-white/60 px-3 py-1 text-xs text-slate-600">
+                        Photo: {selectedFile ? "Attached" : "Optional"}
+                      </span>
+                      <span className="rounded-full border border-slate-200 bg-white/60 px-3 py-1 text-xs text-slate-600">
+                        Text: {description.trim() ? "Attached" : "Optional"}
+                      </span>
+                      <span className="rounded-full border border-slate-200 bg-white/60 px-3 py-1 text-xs text-slate-600">
+                        Location: {coordinates.latitude && coordinates.longitude ? "Attached" : "Optional"}
+                      </span>
+                    </div>
+                    <div className="rounded-[1.2rem] border border-slate-200 bg-white/50 p-3">
+                      <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">Coordinates</p>
+                      <p className="mt-2 text-sm text-slate-700">
+                        {coordinates.latitude && coordinates.longitude
+                          ? `${coordinates.latitude}, ${coordinates.longitude}`
+                          : "Not attached"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {busy ? (
                 <div className="rounded-[1.6rem] border border-blue-200 bg-blue-50/80 p-4 text-sm text-blue-700">
                   <div className="mb-3 flex items-center gap-2">
@@ -436,31 +489,11 @@ export function CitizenPortal() {
                   Submit Report
                 </button>
               </div>
-            </form>
-          </section>
-
-          <aside className="flex flex-col gap-4 p-4 sm:p-5 lg:p-6">
-            <section className="h-[150px] w-full overflow-hidden rounded-[1.6rem] border border-white/50 bg-white/55 p-3 backdrop-blur-xl">
-              <div className="flex h-full items-center gap-3">
-                <div className="relative h-[120px] w-[120px] shrink-0 overflow-hidden rounded-2xl border border-slate-200">
-                  <Image src="/arvind.jpeg" alt="Mayor Arvind Rana" fill className="object-cover" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-700">
-                    Know Your Mayor
-                  </p>
-                  <h3 className="text-sm font-semibold text-slate-800">Arvind Rana</h3>
-                  <p className="mt-1 text-[11px] leading-4 text-slate-600">
-                    Arvind Kumar Rana is the elected Mayor of Hazaribagh, committed to building a
-                    modern, inclusive, and citizen-centric city. With a background in journalism and
-                    social service, he brings a grassroots understanding of public issues and a strong
-                    connection with the community.
-                  </p>
-                </div>
-              </div>
+              </form>
             </section>
 
-            <div className="rounded-[1.8rem] border border-white/50 bg-white/40 p-4 backdrop-blur-xl">
+            <aside className="order-2 flex flex-col gap-4 p-4 sm:p-5 lg:order-2 lg:p-6">
+            <div className="hidden rounded-[1.8rem] border border-white/50 bg-white/40 p-4 backdrop-blur-xl md:block">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500">Live Preview</p>
@@ -536,9 +569,34 @@ export function CitizenPortal() {
                 </div>
               </Link>
             </div>
-          </aside>
+            </aside>
+          </div>
         </div>
       </div>
+
+      <nav className="fixed inset-x-0 bottom-3 z-40 mx-auto flex w-[22rem] max-w-[calc(100vw-1rem)] items-center gap-1 rounded-2xl border border-slate-200/90 bg-white/95 p-1.5 shadow-[0_16px_40px_rgba(15,23,42,0.2)] backdrop-blur md:hidden">
+        <button
+          type="button"
+          className="flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl bg-slate-800 px-1 py-2 text-[10px] font-semibold text-white"
+        >
+          <BellRing className="h-3.5 w-3.5" />
+          <span className="truncate">Citizen Portal</span>
+        </button>
+        <Link
+          href="/mayor"
+          className="flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-[10px] font-semibold text-slate-600 transition hover:bg-white/70 hover:text-slate-900"
+        >
+          <LayoutDashboard className="h-3.5 w-3.5" />
+          <span className="truncate">Mayor Dashboard</span>
+        </Link>
+        <Link
+          href="/streetmap"
+          className="flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-[10px] font-semibold text-slate-600 transition hover:bg-white/70 hover:text-slate-900"
+        >
+          <MapPinned className="h-3.5 w-3.5" />
+          <span className="truncate">Street Map</span>
+        </Link>
+      </nav>
 
       {isMapPickerOpen ? (
         <div className="fixed inset-0 z-[90] flex items-end justify-center bg-slate-900/45 p-3 sm:items-center">

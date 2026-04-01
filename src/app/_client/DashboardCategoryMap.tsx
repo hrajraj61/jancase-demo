@@ -1,9 +1,10 @@
 "use client";
 
+import { divIcon, point } from "leaflet";
 import Link from "next/link";
 import "leaflet/dist/leaflet.css";
 
-import { CircleMarker, MapContainer, Popup, TileLayer, useMap } from "react-leaflet";
+import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import { useEffect, useMemo } from "react";
 
 import type { DashboardReport, HeatmapPoint } from "@/lib/types";
@@ -59,6 +60,16 @@ function MapLegend() {
       </div>
     </div>
   );
+}
+
+function categoryDotIcon(color: string) {
+  return divIcon({
+    className: "",
+    html: `<div style="width:12px;height:12px;border-radius:999px;background:${color};border:2px solid #ffffff;box-shadow:0 0 0 1px rgba(15,23,42,0.35);"></div>`,
+    iconSize: point(12, 12),
+    iconAnchor: point(6, 6),
+    popupAnchor: point(0, -8),
+  });
 }
 
 function HeatLayer({ points }: { points: HeatmapPoint[] }) {
@@ -163,15 +174,28 @@ function createDisplayReports(reports: DashboardReport[]) {
 export function DashboardCategoryMap({
   reports,
   heatmap,
+  className,
 }: {
   reports: DashboardReport[];
   heatmap: HeatmapPoint[];
+  className?: string;
 }) {
   const displayReports = useMemo(() => createDisplayReports(reports), [reports]);
 
   return (
-    <div className="relative h-[34rem] overflow-hidden rounded-[2rem] border border-white/50 bg-white/40 backdrop-blur-md">
-      <MapContainer center={[24.0274, 85.3704]} zoom={13} scrollWheelZoom className="h-full w-full">
+    <div
+      className={
+        className ??
+        "relative h-[34rem] overflow-hidden rounded-[2rem] border border-white/50 bg-white/40 backdrop-blur-md"
+      }
+    >
+      <MapContainer
+        center={[24.0274, 85.3704]}
+        zoom={13}
+        scrollWheelZoom
+        zoomAnimation={false}
+        className="h-full w-full"
+      >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -182,16 +206,10 @@ export function DashboardCategoryMap({
           const markerColor = getCategoryColor(report.category);
 
           return (
-            <CircleMarker
+            <Marker
               key={report.id}
               center={[report.displayLatitude, report.displayLongitude]}
-              radius={8}
-              pathOptions={{
-                color: markerColor,
-                fillColor: markerColor,
-                fillOpacity: 0.92,
-                weight: 2,
-              }}
+              icon={categoryDotIcon(markerColor)}
             >
               <Popup>
                 <div className="space-y-2 text-sm">
@@ -209,7 +227,7 @@ export function DashboardCategoryMap({
                   </Link>
                 </div>
               </Popup>
-            </CircleMarker>
+            </Marker>
           );
         })}
       </MapContainer>

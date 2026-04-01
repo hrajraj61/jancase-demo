@@ -34,7 +34,7 @@ const SentimentMap = dynamic(
 
 type StatusFilter = "All" | "Pending" | "Resolved";
 type TimeFilter = "24h" | "7d" | "30d" | "all";
-type DashboardTab = "insights" | "reports";
+type MapMode = "complaint" | "sentiment";
 
 function getTimeWindowMs(value: TimeFilter) {
   if (value === "24h") return 24 * 60 * 60 * 1000;
@@ -132,49 +132,34 @@ function StatCard({
   value,
   icon: Icon,
   tone,
+  hint,
+  className,
 }: {
   label: string;
   value: number;
   icon: ComponentType<{ className?: string }>;
   tone: string;
+  hint: string;
+  className?: string;
 }) {
   return (
-    <div className="rounded-3xl border border-white/50 bg-white/40 p-5 backdrop-blur-xl">
+    <article
+      className={`relative overflow-hidden rounded-3xl border border-white/50 bg-white/45 p-4 backdrop-blur-xl sm:p-5 ${
+        className ?? ""
+      }`}
+    >
+      <div className="pointer-events-none absolute -right-8 -top-10 h-24 w-24 rounded-full bg-white/40 blur-2xl" />
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm text-slate-500">{label}</p>
+        <p className="text-xs uppercase tracking-[0.14em] text-slate-500 sm:text-sm sm:tracking-[0.08em]">
+          {label}
+        </p>
         <div className={`rounded-2xl p-2 ${tone}`}>
           <Icon className="h-5 w-5" />
         </div>
       </div>
-      <p className="mt-4 text-3xl font-bold text-slate-800">{value}</p>
-    </div>
-  );
-}
-
-function TabButton({
-  active,
-  label,
-  icon: Icon,
-  onClick,
-}: {
-  active: boolean;
-  label: string;
-  icon: ComponentType<{ className?: string }>;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`inline-flex items-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition ${
-        active
-          ? "bg-blue-500 text-white shadow-lg shadow-blue-500/20"
-          : "bg-white/50 text-slate-500 hover:bg-white/70 hover:text-slate-800"
-      }`}
-    >
-      <Icon className="h-4 w-4" />
-      {label}
-    </button>
+      <p className="mt-3 text-2xl font-bold text-slate-800 sm:mt-4 sm:text-3xl">{value}</p>
+      <p className="mt-1 text-[11px] text-slate-500 sm:text-xs">{hint}</p>
+    </article>
   );
 }
 
@@ -189,45 +174,44 @@ function AIInsightsPanel({
 
   return (
     <div className="space-y-4">
-      <section className="rounded-2xl bg-white/30 p-4 backdrop-blur-sm">
-        <h3 className="text-lg font-semibold text-slate-800">AI Analysed Insights</h3>
-        <div className="mt-4 grid gap-3">
-          <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
-            <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Dominant category</p>
-            <p className="mt-2 text-xl font-bold text-slate-800">{insights.topCategory}</p>
+      <section className="rounded-3xl border border-blue-200/70 bg-[linear-gradient(135deg,rgba(239,246,255,0.95),rgba(255,255,255,0.9))] p-4 shadow-[0_12px_32px_rgba(59,130,246,0.12)] backdrop-blur-sm">
+        <div className="flex items-center gap-3">
+          <div className="rounded-xl bg-blue-500 p-2 text-white">
+            <BrainCircuit className="h-4 w-4" />
           </div>
-          <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
-            <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Most negative ward</p>
-            <p className="mt-2 text-lg font-semibold text-slate-800">{insights.mostNegativeWard}</p>
+          <div>
+            <h3 className="text-lg font-semibold text-slate-800">AI Insight Radar</h3>
+            <p className="text-xs text-slate-500">
+              Key patterns from filtered complaints, sentiment, and triage metadata.
+            </p>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Top department</p>
-              <p className="mt-2 text-base font-semibold text-slate-800">
-                {insights.topDepartment}
-              </p>
-            </div>
-            <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Average confidence</p>
-              <p className="mt-2 text-base font-semibold text-slate-800">
-                {insights.averageConfidence}
-              </p>
-            </div>
+        </div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <div className="rounded-2xl border border-white/70 bg-white/70 p-4">
+            <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Dominant category</p>
+            <p className="mt-2 text-base font-bold text-slate-800">{insights.topCategory}</p>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Angry signals</p>
-              <p className="mt-2 text-base font-semibold text-red-600">{insights.angryCount}</p>
-            </div>
-            <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Top signal tag</p>
-              <p className="mt-2 text-base font-semibold text-slate-800">{insights.topSignal}</p>
-            </div>
+          <div className="rounded-2xl border border-white/70 bg-white/70 p-4">
+            <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Top department</p>
+            <p className="mt-2 text-base font-semibold text-slate-800">{insights.topDepartment}</p>
           </div>
+          <div className="rounded-2xl border border-white/70 bg-white/70 p-4">
+            <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Angry signals</p>
+            <p className="mt-2 text-base font-semibold text-rose-600">{insights.angryCount}</p>
+          </div>
+          <div className="rounded-2xl border border-white/70 bg-white/70 p-4">
+            <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Average confidence</p>
+            <p className="mt-2 text-base font-semibold text-slate-800">{insights.averageConfidence}</p>
+          </div>
+        </div>
+        <div className="mt-3 rounded-2xl border border-blue-100 bg-white/70 p-4">
+          <p className="text-xs uppercase tracking-[0.16em] text-blue-600">Watchlist</p>
+          <p className="mt-1 text-sm font-semibold text-slate-800">{insights.mostNegativeWard}</p>
+          <p className="mt-1 text-xs text-slate-500">Top signal tag: {insights.topSignal}</p>
         </div>
       </section>
 
-      <section className="rounded-2xl bg-white/30 p-4 backdrop-blur-sm">
+      <section className="rounded-3xl border border-white/50 bg-white/35 p-4 backdrop-blur-sm">
         <h3 className="text-lg font-semibold text-slate-800">Reports by Category</h3>
         <div className="mt-4 space-y-3">
           {stats.reportsPerCategory.length > 0 ? (
@@ -256,7 +240,7 @@ function AIInsightsPanel({
         </div>
       </section>
 
-      <section className="rounded-2xl bg-white/30 p-4 backdrop-blur-sm">
+      <section className="rounded-3xl border border-white/50 bg-white/35 p-4 backdrop-blur-sm">
         <h3 className="text-lg font-semibold text-slate-800">Ward Sentiment</h3>
         <div className="mt-4 space-y-3">
           {stats.wardSentiment.length > 0 ? (
@@ -309,52 +293,16 @@ function ReportsDataPanel({
 
   return (
     <div className="space-y-4">
-      <section className="rounded-2xl bg-white/30 p-4 backdrop-blur-sm">
-        <h3 className="text-lg font-semibold text-slate-800">Reports Data</h3>
-        <div className="mt-4 max-h-[24rem] space-y-3 overflow-y-auto pr-1">
-          {reports.length > 0 ? (
-            reports.map((report) => (
-              <button
-                key={report.id}
-                type="button"
-                onClick={() => onSelect(report)}
-                className={`w-full rounded-2xl border px-4 py-3 text-left transition ${
-                  selectedReport?.id === report.id
-                    ? "border-blue-300 bg-blue-50/70"
-                    : "border-white/50 bg-white/50 hover:border-slate-300"
-                }`}
-              >
-                <div className="mb-2 flex items-center justify-between gap-3">
-                  <span
-                    className={`rounded-full border px-3 py-1 text-xs font-medium ${formatStatus(report.status)}`}
-                  >
-                    {report.status}
-                  </span>
-                  <span className="text-xs text-slate-400">
-                    {new Date(report.createdAt).toLocaleString()}
-                  </span>
-                </div>
-                <p className="text-base font-bold text-slate-800">
-                  {safeText(report.aiSummary, "No AI summary generated")}
-                </p>
-                <p className="mt-1 text-sm text-slate-500">
-                  {safeText(report.description, "No citizen description provided")}
-                </p>
-                <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-400">
-                  <span>Category: {safeText(report.category, "General")}</span>
-                  <span>Priority: {safeText(report.aiPriorityLabel, "Medium")}</span>
-                  <span>Department: {safeText(report.aiDepartment, "Municipal Operations")}</span>
-                </div>
-              </button>
-            ))
-          ) : (
-            <p className="text-sm text-slate-400">No reports found for the current filters.</p>
-          )}
+      <section className="rounded-3xl border border-white/50 bg-white/40 p-4 shadow-[0_10px_28px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+        <div className="flex items-center gap-3">
+          <div className="rounded-xl bg-slate-800 p-2 text-white">
+            <Database className="h-4 w-4" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-slate-800">Report Detail Deck</h3>
+            <p className="text-xs text-slate-500">Image-first inspection with full triage context.</p>
+          </div>
         </div>
-      </section>
-
-      <section className="rounded-2xl bg-white/30 p-4 backdrop-blur-sm">
-        <h3 className="text-lg font-semibold text-slate-800">Selected Report</h3>
         {selectedReport ? (
           <div className="mt-4 space-y-4">
             <div className="relative h-56 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
@@ -486,6 +434,75 @@ function ReportsDataPanel({
           </div>
         )}
       </section>
+
+      <section className="rounded-3xl border border-white/50 bg-white/35 p-4 backdrop-blur-sm">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-slate-800">Reports Queue</h3>
+          <span className="rounded-full border border-slate-200 bg-white/70 px-3 py-1 text-xs text-slate-600">
+            {reports.length} shown
+          </span>
+        </div>
+        <div className="mt-4 max-h-[26rem] space-y-3 overflow-y-auto pr-1">
+          {reports.length > 0 ? (
+            reports.map((report) => (
+              <button
+                key={report.id}
+                type="button"
+                onClick={() => onSelect(report)}
+                className={`w-full rounded-2xl border p-3 text-left transition ${
+                  selectedReport?.id === report.id
+                    ? "border-blue-300 bg-blue-50/75"
+                    : "border-white/50 bg-white/60 hover:border-slate-300"
+                }`}
+              >
+                <div className="flex gap-3">
+                  <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                    {report.imageUrl ? (
+                      <Image
+                        src={report.imageUrl}
+                        alt="Report thumbnail"
+                        fill
+                        unoptimized
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-[10px] text-slate-400">
+                        No Image
+                      </div>
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="mb-1 flex items-center justify-between gap-2">
+                      <span
+                        className={`rounded-full border px-2.5 py-1 text-[11px] font-medium ${formatStatus(
+                          report.status,
+                        )}`}
+                      >
+                        {report.status}
+                      </span>
+                      <span className="text-[11px] text-slate-400">
+                        {new Date(report.createdAt).toLocaleString()}
+                      </span>
+                    </div>
+                    <p className="text-sm font-semibold text-slate-800">
+                      {safeText(report.aiSummary, "No AI summary generated")}
+                    </p>
+                    <p className="mt-1 text-xs text-slate-500">
+                      {safeText(report.description, "No citizen description provided")}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-slate-500">
+                  <span>Category: {safeText(report.category, "General")}</span>
+                  <span>Priority: {safeText(report.aiPriorityLabel, "Medium")}</span>
+                </div>
+              </button>
+            ))
+          ) : (
+            <p className="text-sm text-slate-400">No reports found for the current filters.</p>
+          )}
+        </div>
+      </section>
     </div>
   );
 }
@@ -499,7 +516,8 @@ export function DashboardScreen() {
   const [categoryFilter, setCategoryFilter] = useState<string>("All");
   const [timeFilter, setTimeFilter] = useState<TimeFilter>("7d");
   const [showHeatmap, setShowHeatmap] = useState(true);
-  const [activeTab, setActiveTab] = useState<DashboardTab>("insights");
+  const [mapMode, setMapMode] = useState<MapMode>("complaint");
+  const [isMapFullscreen, setIsMapFullscreen] = useState(false);
   const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
 
   const fetchDashboard = useCallback(async () => {
@@ -596,9 +614,15 @@ export function DashboardScreen() {
     [filteredReports],
   );
   const recentReports = useMemo(() => filteredReports.slice(0, 10), [filteredReports]);
+  const activeTimeLabel = useMemo(() => {
+    if (timeFilter === "24h") return "Last 24 hours";
+    if (timeFilter === "7d") return "Last 7 days";
+    if (timeFilter === "30d") return "Last 30 days";
+    return "All time";
+  }, [timeFilter]);
 
   return (
-    <main className="min-h-screen px-3 py-4 pb-24 sm:px-5 lg:px-6 xl:pb-6">
+    <main className="min-h-screen px-3 py-4 pb-8 sm:px-5 lg:px-6 xl:pb-6">
       <div className="mx-auto w-full max-w-none space-y-5">
         <header className="rounded-3xl border border-white/50 bg-white/40 p-5 backdrop-blur-xl lg:p-6">
           {/* Cloudivion Branding */}
@@ -611,7 +635,7 @@ export function DashboardScreen() {
 
           <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="text-sm uppercase tracking-[0.35em] text-purple-600">
+              <p className="text-sm uppercase tracking-[0.35em] text-blue-600">
                 Hazaribagh Control Room
               </p>
               <h1 className="mt-3 text-3xl font-bold text-slate-800 sm:text-4xl">
@@ -653,40 +677,71 @@ export function DashboardScreen() {
           </div>
         ) : null}
 
-        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <StatCard
-            label="Total Complaints"
-            value={filteredStats.totalReports}
-            icon={BarChart3}
-            tone="bg-blue-100 text-blue-600"
-          />
-          <StatCard
-            label="Pending Issues"
-            value={filteredStats.pendingReports}
-            icon={Clock3}
-            tone="bg-amber-100 text-amber-600"
-          />
-          <StatCard
-            label="Resolved Today"
-            value={resolvedToday}
-            icon={CheckCircle2}
-            tone="bg-emerald-100 text-emerald-600"
-          />
-          <StatCard
-            label="High Priority Issues"
-            value={highPriority}
-            icon={AlertTriangle}
-            tone="bg-red-100 text-red-600"
-          />
+        <section className="grid gap-4 xl:grid-cols-12">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:col-span-8 xl:grid-cols-4">
+            <StatCard
+              label="Total Complaints"
+              value={filteredStats.totalReports}
+              icon={BarChart3}
+              tone="bg-blue-100 text-blue-600"
+              hint="Reports matching active filters"
+            />
+            <StatCard
+              label="Pending Issues"
+              value={filteredStats.pendingReports}
+              icon={Clock3}
+              tone="bg-amber-100 text-amber-600"
+              hint="Needs department action"
+            />
+            <StatCard
+              label="Resolved Today"
+              value={resolvedToday}
+              icon={CheckCircle2}
+              tone="bg-emerald-100 text-emerald-600"
+              hint="Closed in the last 24h"
+            />
+            <StatCard
+              label="High Priority"
+              value={highPriority}
+              icon={AlertTriangle}
+              tone="bg-red-100 text-red-600"
+              hint="Severity >= 0.75 or AI high"
+            />
+          </div>
+
+          <section className="rounded-3xl border border-white/50 bg-white/40 p-4 backdrop-blur-xl sm:p-5 xl:col-span-4">
+            <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Operations Snapshot</p>
+            <h2 className="mt-2 text-xl font-bold text-slate-800">Control Pulse</h2>
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              <div className="rounded-2xl border border-white/60 bg-white/55 p-3">
+                <p className="text-[11px] uppercase tracking-[0.12em] text-slate-500">Time Window</p>
+                <p className="mt-1 text-sm font-semibold text-slate-800">{activeTimeLabel}</p>
+              </div>
+              <div className="rounded-2xl border border-white/60 bg-white/55 p-3">
+                <p className="text-[11px] uppercase tracking-[0.12em] text-slate-500">Status Filter</p>
+                <p className="mt-1 text-sm font-semibold text-slate-800">{statusFilter}</p>
+              </div>
+              <div className="rounded-2xl border border-white/60 bg-white/55 p-3">
+                <p className="text-[11px] uppercase tracking-[0.12em] text-slate-500">Category</p>
+                <p className="mt-1 truncate text-sm font-semibold text-slate-800">{categoryFilter}</p>
+              </div>
+              <div className="rounded-2xl border border-white/60 bg-white/55 p-3">
+                <p className="text-[11px] uppercase tracking-[0.12em] text-slate-500">Heatmap</p>
+                <p className="mt-1 text-sm font-semibold text-slate-800">
+                  {showHeatmap ? "Visible" : "Hidden"}
+                </p>
+              </div>
+            </div>
+          </section>
         </section>
 
-        <section className="rounded-3xl border border-white/50 bg-white/40 p-4 backdrop-blur-xl">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex items-center gap-2 text-sm text-slate-600">
+        <section className="rounded-3xl border border-white/50 bg-white/40 p-4 backdrop-blur-xl lg:p-5">
+          <div className="grid gap-4 lg:grid-cols-[auto_1fr] lg:items-center">
+            <div className="flex items-center gap-2 text-sm font-medium text-slate-600">
               <Filter className="h-4 w-4" />
               Filters
             </div>
-            <div className="grid gap-3 sm:grid-cols-2 xl:flex xl:flex-wrap">
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               <select
                 value={statusFilter}
                 onChange={(event) => setStatusFilter(event.target.value as StatusFilter)}
@@ -721,142 +776,195 @@ export function DashboardScreen() {
                 <option value="all">All time</option>
               </select>
 
-              <button
-                type="button"
-                onClick={() => setShowHeatmap((current) => !current)}
-                className="rounded-2xl border border-slate-200 bg-white/70 px-4 py-2 text-sm text-slate-700"
-              >
-                {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
-              </button>
             </div>
           </div>
         </section>
 
-        <section className="grid gap-5 xl:grid-cols-[minmax(0,1.7fr)_430px]">
-          <div className="space-y-5">
+        <section className="grid gap-5 xl:grid-cols-12">
+          <div className="space-y-5 xl:col-span-8">
             <section className="rounded-3xl border border-white/50 bg-white/40 p-4 backdrop-blur-xl lg:p-5">
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+              <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 <div>
                   <p className="text-sm text-slate-500">Map View</p>
-                  <h2 className="text-2xl font-bold text-slate-800">Complaint map</h2>
+                  <h2 className="text-2xl font-bold text-slate-800">
+                    {mapMode === "complaint" ? "Complaint map" : "Sentiment map"}
+                  </h2>
                 </div>
-                <p className="text-xs text-slate-400">
-                  Loaded {filteredReports.length} reports from database
-                </p>
-              </div>
-              <DashboardMap
-                reports={filteredReports}
-                heatmap={showHeatmap ? filteredStats.heatmap : []}
-              />
-              <p className="mt-3 text-xs text-slate-400">
-                If two complaints have very close coordinates, heatmap blobs can merge visually.
-                Markers are slightly offset to keep each report clickable.
-              </p>
-            </section>
-
-            <section className="rounded-3xl border border-white/50 bg-white/40 p-4 backdrop-blur-xl lg:p-5">
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-                <div>
-                  <p className="text-sm text-slate-500">Sentiment View</p>
-                  <h2 className="text-2xl font-bold text-slate-800">Sentiment map</h2>
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setMapMode("complaint")}
+                    className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                      mapMode === "complaint"
+                        ? "bg-blue-500 text-white"
+                        : "border border-slate-200 bg-white/70 text-slate-600 hover:bg-white"
+                    }`}
+                  >
+                    Complaint
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMapMode("sentiment")}
+                    className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                      mapMode === "sentiment"
+                        ? "bg-blue-500 text-white"
+                        : "border border-slate-200 bg-white/70 text-slate-600 hover:bg-white"
+                    }`}
+                  >
+                    Sentiment
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsMapFullscreen(true)}
+                    className="rounded-full border border-slate-200 bg-white/70 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-white"
+                  >
+                    Full Screen
+                  </button>
                 </div>
-                <p className="text-xs text-slate-400">
-                  Based on sentimentLabel and sentimentScore
-                </p>
               </div>
-              <SentimentMap reports={filteredReports} />
-              <div className="mt-3 flex flex-wrap gap-2 text-xs">
-                <span className="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-red-700">
-                  Angry
-                </span>
-                <span className="rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-blue-700">
-                  Neutral
-                </span>
-                <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-emerald-700">
-                  Happy
-                </span>
-              </div>
-            </section>
 
-            <section className="rounded-3xl border border-white/50 bg-white/40 p-4 backdrop-blur-xl xl:hidden">
-              <div className="mb-4 flex gap-2 overflow-x-auto">
-                <TabButton
-                  active={activeTab === "insights"}
-                  icon={BrainCircuit}
-                  label="AI Analysed Insights"
-                  onClick={() => setActiveTab("insights")}
-                />
-                <TabButton
-                  active={activeTab === "reports"}
-                  icon={Database}
-                  label="Reports Data"
-                  onClick={() => setActiveTab("reports")}
-                />
-              </div>
-              {activeTab === "insights" ? (
-                <AIInsightsPanel reports={filteredReports} stats={filteredStats} />
+              {mapMode === "complaint" ? (
+                <>
+                  <DashboardMap
+                    reports={filteredReports}
+                    heatmap={showHeatmap ? filteredStats.heatmap : []}
+                  />
+                  <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowHeatmap((current) => !current)}
+                      className="rounded-full border border-slate-200 bg-white/70 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-white"
+                    >
+                      {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
+                    </button>
+                    <p className="text-xs text-slate-400">
+                      Loaded {filteredReports.length} reports. Nearby reports are slightly offset to
+                      keep each marker clickable.
+                    </p>
+                  </div>
+                </>
               ) : (
-                <ReportsDataPanel
-                  reports={recentReports}
-                  selectedReport={selectedReport}
-                  onSelect={(report) => setSelectedReportId(report.id)}
-                />
+                <>
+                  <SentimentMap reports={filteredReports} />
+                  <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex flex-wrap gap-2 text-xs">
+                      <span className="rounded-full border border-slate-200 bg-white/70 px-3 py-1 text-slate-700">
+                        😡 Angry
+                      </span>
+                      <span className="rounded-full border border-slate-200 bg-white/70 px-3 py-1 text-slate-700">
+                        😐 Neutral
+                      </span>
+                      <span className="rounded-full border border-slate-200 bg-white/70 px-3 py-1 text-slate-700">
+                        🙂 Happy
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-400">
+                      Loaded {filteredReports.length} reports based on sentiment label and score.
+                    </p>
+                  </div>
+                </>
               )}
             </section>
           </div>
 
-          <aside className="hidden xl:block">
-            <div className="sticky top-6 space-y-4 rounded-3xl border border-white/50 bg-white/40 p-4 backdrop-blur-xl">
-              <div className="flex gap-2">
-                <TabButton
-                  active={activeTab === "insights"}
-                  icon={BrainCircuit}
-                  label="AI Analysed Insights"
-                  onClick={() => setActiveTab("insights")}
-                />
-                <TabButton
-                  active={activeTab === "reports"}
-                  icon={Database}
-                  label="Reports Data"
-                  onClick={() => setActiveTab("reports")}
-                />
-              </div>
-              {activeTab === "insights" ? (
-                <AIInsightsPanel reports={filteredReports} stats={filteredStats} />
-              ) : (
-                <ReportsDataPanel
-                  reports={recentReports}
-                  selectedReport={selectedReport}
-                  onSelect={(report) => setSelectedReportId(report.id)}
-                />
-              )}
-            </div>
+          <aside className="space-y-5 xl:col-span-4">
+            <AIInsightsPanel reports={filteredReports} stats={filteredStats} />
+            <ReportsDataPanel
+              reports={recentReports}
+              selectedReport={selectedReport}
+              onSelect={(report) => setSelectedReportId(report.id)}
+            />
           </aside>
         </section>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200/60 bg-white/80 p-3 backdrop-blur-xl xl:hidden">
-        <div className="mx-auto flex max-w-md gap-2 rounded-2xl border border-slate-200 bg-white/70 p-2">
-          <button
-            type="button"
-            onClick={() => setActiveTab("insights")}
-            className={`flex-1 rounded-xl px-4 py-3 text-sm font-semibold ${
-              activeTab === "insights" ? "bg-blue-500 text-white" : "text-slate-500"
-            }`}
-          >
-            AI Insights
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("reports")}
-            className={`flex-1 rounded-xl px-4 py-3 text-sm font-semibold ${
-              activeTab === "reports" ? "bg-blue-500 text-white" : "text-slate-500"
-            }`}
-          >
-            Reports Data
-          </button>
+      {isMapFullscreen ? (
+        <div className="fixed inset-0 z-[90] bg-slate-900/70 p-2 sm:p-4">
+          <div className="mx-auto flex h-full w-full max-w-[1800px] flex-col overflow-hidden rounded-3xl border border-white/50 bg-white/95 shadow-2xl backdrop-blur-xl">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-4 py-3 sm:px-5">
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Full Screen Map</p>
+                <h2 className="text-lg font-semibold text-slate-800">
+                  {mapMode === "complaint" ? "Complaint map" : "Sentiment map"}
+                </h2>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setMapMode("complaint")}
+                  className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                    mapMode === "complaint"
+                      ? "bg-blue-500 text-white"
+                      : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  Complaint
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMapMode("sentiment")}
+                  className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                    mapMode === "sentiment"
+                      ? "bg-blue-500 text-white"
+                      : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  Sentiment
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsMapFullscreen(false)}
+                  className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+
+            <div className="min-h-0 flex-1 p-2 sm:p-3">
+              {mapMode === "complaint" ? (
+                <DashboardMap
+                  reports={filteredReports}
+                  heatmap={showHeatmap ? filteredStats.heatmap : []}
+                  className="relative h-full overflow-hidden rounded-[1.4rem] border border-white/50 bg-white/40 backdrop-blur-md"
+                />
+              ) : (
+                <SentimentMap
+                  reports={filteredReports}
+                  className="h-full overflow-hidden rounded-[1.4rem] border border-slate-800 bg-slate-950"
+                />
+              )}
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200/80 px-4 py-3 sm:px-5">
+              {mapMode === "complaint" ? (
+                <button
+                  type="button"
+                  onClick={() => setShowHeatmap((current) => !current)}
+                  className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
+                >
+                  {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
+                </button>
+              ) : (
+                <div className="flex flex-wrap gap-2 text-xs">
+                  <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-slate-700">
+                    😡 Angry
+                  </span>
+                  <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-slate-700">
+                    😐 Neutral
+                  </span>
+                  <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-slate-700">
+                    🙂 Happy
+                  </span>
+                </div>
+              )}
+              <p className="text-xs text-slate-500">
+                Loaded {filteredReports.length} reports from database
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
+      ) : null}
     </main>
   );
 }
