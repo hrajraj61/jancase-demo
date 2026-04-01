@@ -1,7 +1,14 @@
 "use client";
 
 import L from "leaflet";
-import { ArrowLeft, LocateFixed, Navigation } from "lucide-react";
+import {
+  ArrowLeft,
+  BellRing,
+  LayoutDashboard,
+  LocateFixed,
+  MapPinned,
+  Navigation,
+} from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MapContainer, TileLayer, useMap, ZoomControl } from "react-leaflet";
@@ -58,6 +65,9 @@ const LUMINOSITY_COLOR_STOPS: ColorStop[] = [
   { value: 0.67, color: [124, 255, 0] },
   { value: 1, color: [255, 247, 0] },
 ];
+
+const LUMINOSITY_GRADIENT =
+  "linear-gradient(90deg, #0A2AFF 0%, #00E5FF 33%, #7CFF00 66%, #FFF700 100%)";
 
 function clampLuminosity(value: unknown) {
   const numeric = Number(value);
@@ -240,7 +250,7 @@ function MapTools() {
 
   return (
     <>
-      <div className="pointer-events-none absolute bottom-[100px] right-3 z-[1100] flex flex-col gap-2 md:bottom-auto md:right-4 md:top-24">
+      <div className="pointer-events-none absolute right-3 top-1/2 z-[1100] flex -translate-y-1/2 flex-col gap-2 md:right-4 md:top-24 md:translate-y-0">
         <button
           type="button"
           onClick={locateMe}
@@ -266,13 +276,112 @@ function MapTools() {
       </div>
 
       {locationError ? (
-        <div className="pointer-events-none absolute inset-x-4 bottom-4 z-[1100] flex justify-center">
+        <div className="pointer-events-none absolute inset-x-4 bottom-20 z-[1100] flex justify-center md:bottom-4">
           <p className="glass-overlay rounded-full px-4 py-2 text-xs font-medium text-rose-200 shadow-xl">
             {locationError}
           </p>
         </div>
       ) : null}
     </>
+  );
+}
+
+type StreetLoadDetailsProps = {
+  completion: number;
+  onResetData: () => void;
+  progress: RenderProgress;
+  statusLabel: string;
+  statusMessage: string | null;
+  statusTone: string;
+};
+
+function StreetLoadDetails({
+  completion,
+  onResetData,
+  progress,
+  statusLabel,
+  statusMessage,
+  statusTone,
+}: StreetLoadDetailsProps) {
+  return (
+    <div className="space-y-3">
+      <p className="text-xs leading-relaxed text-slate-200/95 sm:text-sm">
+        This map tracks street-light condition and overall lighting condition across every street
+        of Hazaribagh.
+      </p>
+
+      <div
+        className={`inline-flex rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold ${statusTone}`}
+      >
+        {statusLabel}
+      </div>
+
+      <div>
+        <div className="mb-1 flex items-center justify-between text-xs font-medium text-slate-200">
+          <span>Rendered segments</span>
+          <span>
+            {progress.rendered}/{progress.total || "..."}
+          </span>
+        </div>
+        <div className="h-2 w-full overflow-hidden rounded-full bg-white/20">
+          <div
+            className="h-full rounded-full bg-white/80 transition-all duration-200"
+            style={{ width: `${completion}%` }}
+          />
+        </div>
+      </div>
+
+      {statusMessage ? <p className="text-xs font-medium text-rose-200">{statusMessage}</p> : null}
+
+      <div className="flex">
+        <button
+          type="button"
+          onClick={onResetData}
+          className="inline-flex items-center rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-slate-100 transition hover:bg-white/20"
+        >
+          Reset Data
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function MobileStreetTitleRow({ onToggle }: { onToggle: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className="glass-overlay pointer-events-auto w-full rounded-2xl px-3 py-2.5 text-left shadow-xl"
+    >
+      <h1 className="text-[15px] font-semibold leading-tight text-slate-50">Street Luminosity</h1>
+    </button>
+  );
+}
+
+function MobileStreetBackButton() {
+  return (
+    <Link
+      href="/"
+      className="glass-overlay pointer-events-auto inline-flex h-full items-center justify-center gap-1 rounded-2xl px-2.5 py-2 text-[11px] font-medium text-slate-50 shadow-xl transition hover:bg-white/20"
+    >
+      <ArrowLeft className="h-3.5 w-3.5" />
+      Back
+    </Link>
+  );
+}
+
+function MobileStreetLuminosityLevel() {
+  return (
+    <section className="glass-overlay pointer-events-auto w-full rounded-2xl px-2.5 py-2 shadow-xl">
+      <div className="flex items-center gap-1.5">
+        <p className="text-[9px] font-medium text-slate-100">Min</p>
+        <div className="h-2 w-full rounded-full" style={{ background: LUMINOSITY_GRADIENT }} />
+        <p className="text-[9px] font-medium text-slate-100">High</p>
+      </div>
+      <p className="mt-1 whitespace-nowrap text-[9px] font-semibold uppercase tracking-[0.08em] text-slate-100">
+        Luminosity Level
+      </p>
+    </section>
   );
 }
 
@@ -553,8 +662,28 @@ export function StreetMapViewClient() {
         />
       </MapContainer>
 
-      <div className="pointer-events-none absolute inset-x-3 top-3 z-[1000] flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="glass-overlay pointer-events-auto w-full rounded-2xl px-4 py-3 shadow-xl sm:w-auto sm:min-w-[320px] sm:max-w-[560px]">
+      <div className="pointer-events-none absolute inset-x-2.5 top-2.5 z-[1000] space-y-2 md:hidden">
+        <MobileStreetTitleRow onToggle={() => setIsLoadPanelOpen((current) => !current)} />
+        <div className="grid w-full grid-cols-[92px_minmax(0,1fr)] gap-2">
+          <MobileStreetBackButton />
+          <MobileStreetLuminosityLevel />
+        </div>
+        {isLoadPanelOpen ? (
+          <section className="glass-overlay pointer-events-auto w-full rounded-2xl px-3 py-2.5 shadow-xl">
+            <StreetLoadDetails
+              completion={completion}
+              onResetData={handleResetData}
+              progress={progress}
+              statusLabel={statusLabel}
+              statusMessage={statusMessage}
+              statusTone={statusTone}
+            />
+          </section>
+        ) : null}
+      </div>
+
+      <div className="pointer-events-none absolute left-3 top-3 z-[1000] hidden md:block">
+        <div className="glass-overlay pointer-events-auto min-w-[320px] w-[min(74vw,560px)] max-w-[560px] rounded-2xl px-4 py-3 shadow-xl">
           <button
             type="button"
             onClick={() => setIsLoadPanelOpen((current) => !current)}
@@ -565,78 +694,29 @@ export function StreetMapViewClient() {
             </p>
             <h1 className="mt-1 text-lg font-semibold text-slate-50">Street Luminosity</h1>
           </button>
-
           {isLoadPanelOpen ? (
-            <>
-              <p className="mt-1 text-xs leading-relaxed text-slate-200/95 sm:text-sm">
-                This map tracks street-light condition and overall lighting condition across
-                every street of Hazaribagh.
-              </p>
-
-              <div
-                className={`mt-3 inline-flex rounded-full border border-white/30 bg-white/15 px-3 py-1 text-xs font-semibold ${statusTone}`}
-              >
-                {statusLabel}
-              </div>
-
-              <div className="mt-3">
-                <div className="mb-1 flex items-center justify-between text-xs font-medium text-slate-200">
-                  <span>Rendered segments</span>
-                  <span>
-                    {progress.rendered}/{progress.total || "..."}
-                  </span>
-                </div>
-                <div className="h-2 w-full overflow-hidden rounded-full bg-white/20">
-                  <div
-                    className="h-full rounded-full bg-white/80 transition-all duration-200"
-                    style={{ width: `${completion}%` }}
-                  />
-                </div>
-              </div>
-
-              {statusMessage ? (
-                <p className="mt-2 text-xs font-medium text-rose-200">{statusMessage}</p>
-              ) : null}
-
-              <div className="mt-3 flex">
-                <button
-                  type="button"
-                  onClick={handleResetData}
-                  className="inline-flex items-center rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-slate-100 transition hover:bg-white/20"
-                >
-                  Reset Data
-                </button>
-              </div>
-            </>
+            <div className="mt-3">
+              <StreetLoadDetails
+                completion={completion}
+                onResetData={handleResetData}
+                progress={progress}
+                statusLabel={statusLabel}
+                statusMessage={statusMessage}
+                statusTone={statusTone}
+              />
+            </div>
           ) : null}
         </div>
+      </div>
 
+      <div className="pointer-events-none absolute right-3 top-3 z-[1100] hidden flex-col items-end gap-2 md:flex">
         <Link
           href="/"
-          className="glass-overlay pointer-events-auto inline-flex self-start items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium text-slate-50 shadow-xl transition hover:bg-white/20"
+          className="glass-overlay pointer-events-auto inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium text-slate-50 shadow-xl transition hover:bg-white/20"
         >
           <ArrowLeft className="h-4 w-4" />
           Back
         </Link>
-      </div>
-
-      <div className="pointer-events-none absolute bottom-4 left-3 z-[1100] md:hidden">
-        <section className="glass-overlay pointer-events-auto rounded-2xl px-3 py-2 shadow-xl">
-          <div className="flex items-center gap-2">
-            <p className="text-[10px] font-medium text-slate-100">Min</p>
-            <div
-              className="h-2.5 w-28 rounded-full"
-              style={{
-                background:
-                  "linear-gradient(90deg, #0A2AFF 0%, #00E5FF 33%, #7CFF00 66%, #FFF700 100%)",
-              }}
-            />
-            <p className="text-[10px] font-medium text-slate-100">High</p>
-          </div>
-          <p className="mt-2 whitespace-nowrap text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-100">
-            Luminosity Level
-          </p>
-        </section>
       </div>
 
       <div className="pointer-events-none absolute inset-x-3 bottom-3 z-[1000] hidden justify-center md:flex md:justify-start">
@@ -646,14 +726,35 @@ export function StreetMapViewClient() {
           </p>
           <div
             className="mt-2 h-2.5 w-full rounded-full"
-            style={{
-              background:
-                "linear-gradient(90deg, #0A2AFF 0%, #00E5FF 33%, #7CFF00 66%, #FFF700 100%)",
-            }}
+            style={{ background: LUMINOSITY_GRADIENT }}
           />
          
         </section>
       </div>
+
+      <nav className="fixed inset-x-0 bottom-3 z-[1200] mx-auto flex w-[22rem] max-w-[calc(100vw-1rem)] items-center gap-1 rounded-2xl border border-slate-200/90 bg-white/95 p-1.5 shadow-[0_16px_40px_rgba(15,23,42,0.2)] backdrop-blur md:hidden">
+        <Link
+          href="/"
+          className="flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-[10px] font-semibold text-slate-600 transition hover:bg-white/70 hover:text-slate-900"
+        >
+          <BellRing className="h-3.5 w-3.5" />
+          <span className="truncate">Citizen Portal</span>
+        </Link>
+        <Link
+          href="/mayor"
+          className="flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-[10px] font-semibold text-slate-600 transition hover:bg-white/70 hover:text-slate-900"
+        >
+          <LayoutDashboard className="h-3.5 w-3.5" />
+          <span className="truncate">Mayor Dashboard</span>
+        </Link>
+        <button
+          type="button"
+          className="flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl bg-slate-800 px-1 py-2 text-[10px] font-semibold text-white"
+        >
+          <MapPinned className="h-3.5 w-3.5" />
+          <span className="truncate">Street Map</span>
+        </button>
+      </nav>
     </section>
   );
 }

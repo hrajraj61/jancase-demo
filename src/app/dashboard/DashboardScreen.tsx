@@ -6,12 +6,15 @@ import Link from "next/link";
 import {
   AlertTriangle,
   BarChart3,
+  BellRing,
   BrainCircuit,
   CheckCircle2,
   Clock3,
   Database,
   ExternalLink,
   Filter,
+  LayoutDashboard,
+  MapPinned,
   RefreshCcw,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState, type ComponentType } from "react";
@@ -501,7 +504,7 @@ export function DashboardScreen() {
   }, [timeFilter]);
 
   return (
-    <main className="min-h-screen px-3 py-4 pb-8 sm:px-5 lg:px-6 xl:pb-6">
+    <main className="min-h-screen px-3 py-4 pb-24 md:pb-8 sm:px-5 lg:px-6 xl:pb-6">
       <div className="mx-auto w-full max-w-none space-y-5">
         <header className="rounded-3xl border border-white/50 bg-white/40 p-5 backdrop-blur-xl lg:p-6">
           {/* Cloudivion Branding */}
@@ -840,6 +843,30 @@ export function DashboardScreen() {
           </div>
         </div>
       ) : null}
+
+      <nav className="fixed inset-x-0 bottom-3 z-40 mx-auto flex w-[22rem] max-w-[calc(100vw-1rem)] items-center gap-1 rounded-2xl border border-slate-200/90 bg-white/95 p-1.5 shadow-[0_16px_40px_rgba(15,23,42,0.2)] backdrop-blur md:hidden">
+        <Link
+          href="/"
+          className="flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-[10px] font-semibold text-slate-600 transition hover:bg-white/70 hover:text-slate-900"
+        >
+          <BellRing className="h-3.5 w-3.5" />
+          <span className="truncate">Citizen Portal</span>
+        </Link>
+        <button
+          type="button"
+          className="flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl bg-slate-800 px-1 py-2 text-[10px] font-semibold text-white"
+        >
+          <LayoutDashboard className="h-3.5 w-3.5" />
+          <span className="truncate">Mayor Dashboard</span>
+        </button>
+        <Link
+          href="/streetmap"
+          className="flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-[10px] font-semibold text-slate-600 transition hover:bg-white/70 hover:text-slate-900"
+        >
+          <MapPinned className="h-3.5 w-3.5" />
+          <span className="truncate">Street Map</span>
+        </Link>
+      </nav>
     </main>
   );
 }
