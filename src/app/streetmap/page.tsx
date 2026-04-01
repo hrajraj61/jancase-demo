@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
+import nextDynamic from "next/dynamic";
 
-const StreetMapView = dynamic(
+export const dynamic = "force-dynamic";
+
+const StreetMapView = nextDynamic(
   () => import("./StreetMapView").then((mod) => mod.StreetMapView),
   { ssr: false },
 );
@@ -14,3 +16,5 @@ export const metadata: Metadata = {
 export default function StreetMapPage() {
   return <StreetMapView />;
 }
+
+
