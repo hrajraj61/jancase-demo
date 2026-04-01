@@ -240,27 +240,33 @@ function MapTools() {
 
   return (
     <>
-      <div className="pointer-events-none absolute right-3 top-1/2 z-[1000] flex -translate-y-1/2 flex-col gap-2 sm:right-4 sm:top-24 sm:translate-y-0">
+      <div className="pointer-events-none absolute bottom-[100px] right-3 z-[1100] flex flex-col gap-2 md:bottom-auto md:right-4 md:top-24">
         <button
           type="button"
           onClick={locateMe}
-          className="glass-overlay pointer-events-auto inline-flex min-w-[132px] items-center justify-center gap-2 rounded-full px-3.5 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-50 shadow-xl transition hover:bg-white/20 sm:text-xs"
+          aria-label={isLocating ? "Locating" : "My Location"}
+          title={isLocating ? "Locating" : "My Location"}
+          className="glass-overlay pointer-events-auto inline-flex h-10 w-10 items-center justify-center gap-0 rounded-full p-0 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-50 shadow-xl transition hover:bg-white/20 md:h-auto md:min-w-[132px] md:gap-2 md:px-3.5 md:py-2 md:text-xs"
         >
           <LocateFixed className={`h-3.5 w-3.5 ${isLocating ? "animate-spin" : ""}`} />
-          {isLocating ? "Locating" : "My Location"}
+          <span className="sr-only md:not-sr-only">
+            {isLocating ? "Locating" : "My Location"}
+          </span>
         </button>
         <button
           type="button"
           onClick={recenterToCity}
-          className="glass-overlay pointer-events-auto inline-flex min-w-[132px] items-center justify-center gap-2 rounded-full px-3.5 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-50 shadow-xl transition hover:bg-white/20 sm:text-xs"
+          aria-label="Recenter"
+          title="Recenter"
+          className="glass-overlay pointer-events-auto inline-flex h-10 w-10 items-center justify-center gap-0 rounded-full p-0 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-50 shadow-xl transition hover:bg-white/20 md:h-auto md:min-w-[132px] md:gap-2 md:px-3.5 md:py-2 md:text-xs"
         >
           <Navigation className="h-3.5 w-3.5" />
-          Recenter
+          <span className="sr-only md:not-sr-only">Recenter</span>
         </button>
       </div>
 
       {locationError ? (
-        <div className="pointer-events-none absolute inset-x-4 bottom-4 z-[1000] flex justify-center">
+        <div className="pointer-events-none absolute inset-x-4 bottom-4 z-[1100] flex justify-center">
           <p className="glass-overlay rounded-full px-4 py-2 text-xs font-medium text-rose-200 shadow-xl">
             {locationError}
           </p>
@@ -614,7 +620,26 @@ export function StreetMapViewClient() {
         </Link>
       </div>
 
-      <div className="pointer-events-none absolute inset-x-3 bottom-3 z-[1000] flex justify-center sm:justify-start">
+      <div className="pointer-events-none absolute bottom-4 left-3 z-[1100] md:hidden">
+        <section className="glass-overlay pointer-events-auto rounded-2xl px-3 py-2 shadow-xl">
+          <div className="flex items-center gap-2">
+            <p className="text-[10px] font-medium text-slate-100">Min</p>
+            <div
+              className="h-2.5 w-28 rounded-full"
+              style={{
+                background:
+                  "linear-gradient(90deg, #0A2AFF 0%, #00E5FF 33%, #7CFF00 66%, #FFF700 100%)",
+              }}
+            />
+            <p className="text-[10px] font-medium text-slate-100">High</p>
+          </div>
+          <p className="mt-2 whitespace-nowrap text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-100">
+            Luminosity Level
+          </p>
+        </section>
+      </div>
+
+      <div className="pointer-events-none absolute inset-x-3 bottom-3 z-[1000] hidden justify-center md:flex md:justify-start">
         <section className="glass-overlay pointer-events-auto w-[min(94vw,460px)] rounded-2xl p-4 shadow-xl sm:w-[420px]">
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-200">
             Luminosity Level

@@ -279,181 +279,40 @@ function AIInsightsPanel({
 
 function ReportsDataPanel({
   reports,
-  selectedReport,
-  onSelect,
 }: {
   reports: DashboardReport[];
-  selectedReport: DashboardReport | null;
-  onSelect: (report: DashboardReport) => void;
 }) {
-  const mapsUrl =
-    selectedReport?.latitude != null && selectedReport.longitude != null
-      ? `https://www.google.com/maps?q=${selectedReport.latitude},${selectedReport.longitude}`
-      : null;
-
   return (
-    <div className="space-y-4">
-      <section className="rounded-3xl border border-white/50 bg-white/40 p-4 shadow-[0_10px_28px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+    <section className="rounded-3xl border border-white/50 bg-white/40 p-4 shadow-[0_10px_28px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+      <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="rounded-xl bg-slate-800 p-2 text-white">
             <Database className="h-4 w-4" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-slate-800">Report Detail Deck</h3>
-            <p className="text-xs text-slate-500">Image-first inspection with full triage context.</p>
+            <h3 className="text-lg font-semibold text-slate-800">Report Table Card View</h3>
+            <p className="text-xs text-slate-500">
+              Showing key columns from `Report` table with image, status, and location links.
+            </p>
           </div>
         </div>
-        {selectedReport ? (
-          <div className="mt-4 space-y-4">
-            <div className="relative h-56 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
-              {selectedReport.imageUrl ? (
-                <Image
-                  src={selectedReport.imageUrl}
-                  alt="Complaint evidence"
-                  fill
-                  unoptimized
-                  className="object-cover"
-                />
-              ) : (
-                <div className="flex h-full items-center justify-center px-6 text-center text-sm text-slate-400">
-                  No image uploaded for this complaint.
-                </div>
-              )}
-            </div>
+        <span className="rounded-full border border-slate-200 bg-white/70 px-3 py-1 text-xs text-slate-600">
+          {reports.length} complaints
+        </span>
+      </div>
 
-            <div className="rounded-2xl border border-blue-200 bg-blue-50/70 p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-blue-500">AI Summary</p>
-              <p className="mt-2 text-lg font-bold text-slate-800">
-                {safeText(selectedReport.aiSummary, "No AI summary generated")}
-              </p>
-            </div>
+      <div className="mt-4 max-h-[54rem] space-y-3 overflow-y-auto pr-1">
+        {reports.length > 0 ? (
+          reports.map((report) => {
+            const mapsUrl =
+              report.latitude != null && report.longitude != null
+                ? `https://www.google.com/maps?q=${report.latitude},${report.longitude}`
+                : null;
 
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Category</p>
-                <p className="mt-2 text-sm font-semibold text-slate-800">
-                  {safeText(selectedReport.category, "General")}
-                </p>
-              </div>
-              <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Priority</p>
-                <p className="mt-2 text-sm font-semibold text-slate-800">
-                  {safeText(selectedReport.aiPriorityLabel, "Medium")}
-                </p>
-              </div>
-              <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Department</p>
-                <p className="mt-2 text-sm font-semibold text-slate-800">
-                  {safeText(selectedReport.aiDepartment, "Municipal Operations")}
-                </p>
-              </div>
-              <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Confidence</p>
-                <p className="mt-2 text-sm font-semibold text-slate-800">
-                  {selectedReport.aiConfidence?.toFixed(2) ?? "N/A"}
-                </p>
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Action Required</p>
-              <p className="mt-2 text-sm leading-6 text-slate-700">
-                {safeText(selectedReport.aiActionRequired, "No action recommendation generated")}
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Visual Summary</p>
-              <p className="mt-2 text-sm leading-6 text-slate-700">
-                {safeText(selectedReport.aiVisualSummary, "No visual summary generated")}
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Detected Signals</p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {selectedReport.aiKeySignals.length > 0 ? (
-                  selectedReport.aiKeySignals.map((signal) => (
-                    <span
-                      key={signal}
-                      className="rounded-full border border-slate-200 bg-white/70 px-3 py-1 text-xs text-slate-600"
-                    >
-                      {signal}
-                    </span>
-                  ))
-                ) : (
-                  <span className="text-sm text-slate-400">No AI signal tags</span>
-                )}
-              </div>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Coordinates</p>
-                <p className="mt-2 text-sm text-slate-700">
-                  {selectedReport.latitude != null && selectedReport.longitude != null
-                    ? `${selectedReport.latitude}, ${selectedReport.longitude}`
-                    : "Location not provided"}
-                </p>
-              </div>
-              <div className="rounded-2xl border border-white/50 bg-white/50 p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Ward / Status</p>
-                <p className="mt-2 text-sm text-slate-700">
-                  Ward {selectedReport.wardNumber ?? "Unknown"} / {selectedReport.status}
-                </p>
-              </div>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <Link
-                href={`/mayor/reports/${selectedReport.id}`}
-                className="inline-flex items-center justify-center rounded-full bg-blue-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-400"
-              >
-                Open Full Report Page
-              </Link>
-              {mapsUrl ? (
-                <a
-                  href={mapsUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-200 bg-white/70 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-white"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  Open in Maps
-                </a>
-              ) : (
-                <div className="flex items-center justify-center rounded-full border border-slate-200 bg-white/50 px-4 py-2.5 text-sm text-slate-400">
-                  No map coordinates
-                </div>
-              )}
-            </div>
-          </div>
-        ) : (
-          <div className="mt-4 rounded-2xl bg-white/40 px-4 py-10 text-center text-sm text-slate-400">
-            Select a report from the list or map.
-          </div>
-        )}
-      </section>
-
-      <section className="rounded-3xl border border-white/50 bg-white/35 p-4 backdrop-blur-sm">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-slate-800">Reports Queue</h3>
-          <span className="rounded-full border border-slate-200 bg-white/70 px-3 py-1 text-xs text-slate-600">
-            {reports.length} shown
-          </span>
-        </div>
-        <div className="mt-4 max-h-[26rem] space-y-3 overflow-y-auto pr-1">
-          {reports.length > 0 ? (
-            reports.map((report) => (
-              <button
+            return (
+              <article
                 key={report.id}
-                type="button"
-                onClick={() => onSelect(report)}
-                className={`w-full rounded-2xl border p-3 text-left transition ${
-                  selectedReport?.id === report.id
-                    ? "border-blue-300 bg-blue-50/75"
-                    : "border-white/50 bg-white/60 hover:border-slate-300"
-                }`}
+                className="rounded-2xl border border-white/60 bg-white/60 p-3 shadow-sm"
               >
                 <div className="flex gap-3">
                   <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
@@ -467,12 +326,13 @@ function ReportsDataPanel({
                       />
                     ) : (
                       <div className="flex h-full items-center justify-center text-[10px] text-slate-400">
-                        No Image
+                        No image
                       </div>
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="mb-1 flex items-center justify-between gap-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="truncate text-xs font-semibold text-slate-700">ID: {report.id}</p>
                       <span
                         className={`rounded-full border px-2.5 py-1 text-[11px] font-medium ${formatStatus(
                           report.status,
@@ -480,30 +340,70 @@ function ReportsDataPanel({
                       >
                         {report.status}
                       </span>
-                      <span className="text-[11px] text-slate-400">
-                        {new Date(report.createdAt).toLocaleString()}
-                      </span>
                     </div>
-                    <p className="text-sm font-semibold text-slate-800">
-                      {safeText(report.aiSummary, "No AI summary generated")}
+                    <p className="mt-1 text-[11px] text-slate-500">
+                      Created: {new Date(report.createdAt).toLocaleString()}
                     </p>
-                    <p className="mt-1 text-xs text-slate-500">
-                      {safeText(report.description, "No citizen description provided")}
-                    </p>
+                    <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-[11px] text-slate-600">
+                      <p>Category: {safeText(report.category, "General")}</p>
+                      <p>Ward: {report.wardNumber ?? "Unknown"}</p>
+                      <p>Priority: {safeText(report.aiPriorityLabel, "Medium")}</p>
+                      <p>Department: {safeText(report.aiDepartment, "Municipal Operations")}</p>
+                      <p>Sentiment: {safeText(report.sentimentLabel, "neutral")}</p>
+                      <p>Confidence: {report.aiConfidence?.toFixed(2) ?? "N/A"}</p>
+                    </div>
                   </div>
                 </div>
-                <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-slate-500">
-                  <span>Category: {safeText(report.category, "General")}</span>
-                  <span>Priority: {safeText(report.aiPriorityLabel, "Medium")}</span>
+
+                <div className="mt-2 rounded-xl border border-slate-200 bg-white/70 p-2">
+                  <p className="text-[10px] uppercase tracking-[0.12em] text-slate-500">Description</p>
+                  <p className="mt-1 text-xs text-slate-700">
+                    {safeText(report.description, "No citizen description provided")}
+                  </p>
                 </div>
-              </button>
-            ))
-          ) : (
-            <p className="text-sm text-slate-400">No reports found for the current filters.</p>
-          )}
-        </div>
-      </section>
-    </div>
+
+                <div className="mt-2 rounded-xl border border-blue-100 bg-blue-50/60 p-2">
+                  <p className="text-[10px] uppercase tracking-[0.12em] text-blue-600">AI Summary</p>
+                  <p className="mt-1 text-xs text-slate-700">
+                    {safeText(report.aiSummary, "No AI summary generated")}
+                  </p>
+                </div>
+
+                <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
+                  <span className="rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-[11px] text-slate-600">
+                    Coordinates:{" "}
+                    {report.latitude != null && report.longitude != null
+                      ? `${report.latitude}, ${report.longitude}`
+                      : "Not provided"}
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    <Link
+                      href={`/mayor/reports/${report.id}`}
+                      className="inline-flex items-center rounded-full bg-blue-500 px-3 py-1.5 text-[11px] font-semibold text-white transition hover:bg-blue-400"
+                    >
+                      Open Full Report
+                    </Link>
+                    {mapsUrl ? (
+                      <a
+                        href={mapsUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-700 transition hover:bg-slate-50"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" />
+                        Maps
+                      </a>
+                    ) : null}
+                  </div>
+                </div>
+              </article>
+            );
+          })
+        ) : (
+          <p className="text-sm text-slate-400">No reports found for the current filters.</p>
+        )}
+      </div>
+    </section>
   );
 }
 
@@ -518,7 +418,6 @@ export function DashboardScreen() {
   const [showHeatmap, setShowHeatmap] = useState(true);
   const [mapMode, setMapMode] = useState<MapMode>("complaint");
   const [isMapFullscreen, setIsMapFullscreen] = useState(false);
-  const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
 
   const fetchDashboard = useCallback(async () => {
     try {
@@ -580,26 +479,6 @@ export function DashboardScreen() {
       return matchesStatus && matchesCategory && withinTime;
     });
   }, [categoryFilter, data, statusFilter, timeFilter]);
-
-  useEffect(() => {
-    if (filteredReports.length === 0) {
-      setSelectedReportId(null);
-      return;
-    }
-
-    const exists = selectedReportId
-      ? filteredReports.some((report) => report.id === selectedReportId)
-      : false;
-
-    if (!exists) {
-      setSelectedReportId(filteredReports[0].id);
-    }
-  }, [filteredReports, selectedReportId]);
-
-  const selectedReport = useMemo(
-    () => filteredReports.find((report) => report.id === selectedReportId) ?? null,
-    [filteredReports, selectedReportId],
-  );
 
   const filteredStats = useMemo(
     () => buildDashboardStats(filteredReports),
@@ -869,11 +748,7 @@ export function DashboardScreen() {
 
           <aside className="space-y-5 xl:col-span-4">
             <AIInsightsPanel reports={filteredReports} stats={filteredStats} />
-            <ReportsDataPanel
-              reports={recentReports}
-              selectedReport={selectedReport}
-              onSelect={(report) => setSelectedReportId(report.id)}
-            />
+            <ReportsDataPanel reports={recentReports} />
           </aside>
         </section>
       </div>
