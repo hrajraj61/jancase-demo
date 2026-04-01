@@ -176,52 +176,60 @@ function AIInsightsPanel({
   const insights = useMemo(() => buildAiInsights(reports, stats), [reports, stats]);
 
   return (
-    <div className="space-y-4">
-      <section className="rounded-3xl border border-blue-200/70 bg-[linear-gradient(135deg,rgba(239,246,255,0.95),rgba(255,255,255,0.9))] p-4 shadow-[0_12px_32px_rgba(59,130,246,0.12)] backdrop-blur-sm">
-        <div className="flex items-center gap-3">
+    <div className="min-w-0 space-y-4">
+      <section className="min-w-0 rounded-3xl border border-blue-200/70 bg-[linear-gradient(135deg,rgba(239,246,255,0.95),rgba(255,255,255,0.9))] p-4 shadow-[0_12px_32px_rgba(59,130,246,0.12)] backdrop-blur-sm">
+        <div className="flex min-w-0 items-center gap-3">
           <div className="rounded-xl bg-blue-500 p-2 text-white">
             <BrainCircuit className="h-4 w-4" />
           </div>
-          <div>
+          <div className="min-w-0">
             <h3 className="text-lg font-semibold text-slate-800">AI Insight Radar</h3>
             <p className="text-xs text-slate-500">
               Key patterns from filtered complaints, sentiment, and triage metadata.
             </p>
           </div>
         </div>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl border border-white/70 bg-white/70 p-4">
+        <div className="mt-4 grid min-w-0 gap-3 sm:grid-cols-2">
+          <div className="min-w-0 rounded-2xl border border-white/70 bg-white/70 p-4">
             <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Dominant category</p>
-            <p className="mt-2 text-base font-bold text-slate-800">{insights.topCategory}</p>
+            <p className="mt-2 break-words text-base font-bold text-slate-800">
+              {insights.topCategory}
+            </p>
           </div>
-          <div className="rounded-2xl border border-white/70 bg-white/70 p-4">
+          <div className="min-w-0 rounded-2xl border border-white/70 bg-white/70 p-4">
             <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Top department</p>
-            <p className="mt-2 text-base font-semibold text-slate-800">{insights.topDepartment}</p>
+            <p className="mt-2 break-words text-base font-semibold text-slate-800">
+              {insights.topDepartment}
+            </p>
           </div>
-          <div className="rounded-2xl border border-white/70 bg-white/70 p-4">
+          <div className="min-w-0 rounded-2xl border border-white/70 bg-white/70 p-4">
             <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Angry signals</p>
             <p className="mt-2 text-base font-semibold text-rose-600">{insights.angryCount}</p>
           </div>
-          <div className="rounded-2xl border border-white/70 bg-white/70 p-4">
+          <div className="min-w-0 rounded-2xl border border-white/70 bg-white/70 p-4">
             <p className="text-xs uppercase tracking-[0.16em] text-slate-500">Average confidence</p>
             <p className="mt-2 text-base font-semibold text-slate-800">{insights.averageConfidence}</p>
           </div>
         </div>
-        <div className="mt-3 rounded-2xl border border-blue-100 bg-white/70 p-4">
+        <div className="mt-3 min-w-0 rounded-2xl border border-blue-100 bg-white/70 p-4">
           <p className="text-xs uppercase tracking-[0.16em] text-blue-600">Watchlist</p>
-          <p className="mt-1 text-sm font-semibold text-slate-800">{insights.mostNegativeWard}</p>
-          <p className="mt-1 text-xs text-slate-500">Top signal tag: {insights.topSignal}</p>
+          <p className="mt-1 break-words text-sm font-semibold text-slate-800">
+            {insights.mostNegativeWard}
+          </p>
+          <p className="mt-1 break-words text-xs text-slate-500">
+            Top signal tag: {insights.topSignal}
+          </p>
         </div>
       </section>
 
-      <section className="rounded-3xl border border-white/50 bg-white/35 p-4 backdrop-blur-sm">
+      <section className="min-w-0 rounded-3xl border border-white/50 bg-white/35 p-4 backdrop-blur-sm">
         <h3 className="text-lg font-semibold text-slate-800">Reports by Category</h3>
         <div className="mt-4 space-y-3">
           {stats.reportsPerCategory.length > 0 ? (
             stats.reportsPerCategory.map((item) => (
               <div key={item.category}>
                 <div className="mb-1 flex items-center justify-between text-sm text-slate-600">
-                  <span>{item.category}</span>
+                  <span className="min-w-0 break-words pr-2">{item.category}</span>
                   <span>{item.count}</span>
                 </div>
                 <div className="h-2 rounded-full bg-slate-200/60">
@@ -243,7 +251,7 @@ function AIInsightsPanel({
         </div>
       </section>
 
-      <section className="rounded-3xl border border-white/50 bg-white/35 p-4 backdrop-blur-sm">
+      <section className="min-w-0 rounded-3xl border border-white/50 bg-white/35 p-4 backdrop-blur-sm">
         <h3 className="text-lg font-semibold text-slate-800">Ward Sentiment</h3>
         <div className="mt-4 space-y-3">
           {stats.wardSentiment.length > 0 ? (
@@ -504,8 +512,8 @@ export function DashboardScreen() {
   }, [timeFilter]);
 
   return (
-    <main className="min-h-screen px-3 py-4 pb-24 md:pb-8 sm:px-5 lg:px-6 xl:pb-6">
-      <div className="mx-auto w-full max-w-none space-y-5">
+    <main className="min-h-screen overflow-x-hidden px-3 py-4 pb-24 md:pb-8 sm:px-5 lg:px-6 xl:pb-6">
+      <div className="mx-auto w-full max-w-none min-w-0 space-y-5">
         <header className="rounded-3xl border border-white/50 bg-white/40 p-5 backdrop-blur-xl lg:p-6">
           {/* Cloudivion Branding */}
           <div className="mb-5 flex items-center gap-3 rounded-2xl border border-slate-200/40 bg-white/30 px-4 py-2.5">
@@ -662,11 +670,11 @@ export function DashboardScreen() {
           </div>
         </section>
 
-        <section className="grid gap-5 xl:grid-cols-12">
-          <div className="space-y-5 xl:col-span-8">
-            <section className="rounded-3xl border border-white/50 bg-white/40 p-4 backdrop-blur-xl lg:p-5">
-              <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <div>
+        <section className="grid min-w-0 gap-5 xl:grid-cols-12">
+          <div className="min-w-0 space-y-5 xl:col-span-8">
+            <section className="min-w-0 rounded-3xl border border-white/50 bg-white/40 p-4 backdrop-blur-xl lg:p-5">
+              <div className="mb-4 flex min-w-0 flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                <div className="min-w-0">
                   <p className="text-sm text-slate-500">Map View</p>
                   <h2 className="text-2xl font-bold text-slate-800">
                     {mapMode === "complaint" ? "Complaint map" : "Sentiment map"}
@@ -710,6 +718,7 @@ export function DashboardScreen() {
                   <DashboardMap
                     reports={filteredReports}
                     heatmap={showHeatmap ? filteredStats.heatmap : []}
+                    className="relative h-[34rem] w-full overflow-hidden rounded-[2rem] border border-white/50 bg-white/40 backdrop-blur-md"
                   />
                   <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
                     <button
@@ -727,7 +736,10 @@ export function DashboardScreen() {
                 </>
               ) : (
                 <>
-                  <SentimentMap reports={filteredReports} />
+                  <SentimentMap
+                    reports={filteredReports}
+                    className="h-[34rem] w-full overflow-hidden rounded-[2rem] border border-slate-800 bg-slate-950"
+                  />
                   <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
                     <div className="flex flex-wrap gap-2 text-xs">
                       <span className="rounded-full border border-slate-200 bg-white/70 px-3 py-1 text-slate-700">
@@ -749,7 +761,7 @@ export function DashboardScreen() {
             </section>
           </div>
 
-          <aside className="space-y-5 xl:col-span-4">
+          <aside className="min-w-0 space-y-5 xl:col-span-4">
             <AIInsightsPanel reports={filteredReports} stats={filteredStats} />
             <ReportsDataPanel reports={recentReports} />
           </aside>
@@ -757,88 +769,89 @@ export function DashboardScreen() {
       </div>
 
       {isMapFullscreen ? (
-        <div className="fixed inset-0 z-[90] bg-slate-900/70 p-2 sm:p-4">
-          <div className="mx-auto flex h-full w-full max-w-[1800px] flex-col overflow-hidden rounded-3xl border border-white/50 bg-white/95 shadow-2xl backdrop-blur-xl">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/80 px-4 py-3 sm:px-5">
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Full Screen Map</p>
-                <h2 className="text-lg font-semibold text-slate-800">
-                  {mapMode === "complaint" ? "Complaint map" : "Sentiment map"}
-                </h2>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setMapMode("complaint")}
-                  className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
-                    mapMode === "complaint"
-                      ? "bg-blue-500 text-white"
-                      : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
-                  }`}
-                >
-                  Complaint
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setMapMode("sentiment")}
-                  className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
-                    mapMode === "sentiment"
-                      ? "bg-blue-500 text-white"
-                      : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
-                  }`}
-                >
-                  Sentiment
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsMapFullscreen(false)}
-                  className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
+        <div className="fixed inset-0 z-[90] bg-slate-950">
+          <div className="relative h-full w-full">
+            {mapMode === "complaint" ? (
+              <DashboardMap
+                reports={filteredReports}
+                heatmap={showHeatmap ? filteredStats.heatmap : []}
+                className="relative h-full w-full overflow-hidden"
+              />
+            ) : (
+              <SentimentMap reports={filteredReports} className="h-full w-full overflow-hidden" />
+            )}
 
-            <div className="min-h-0 flex-1 p-2 sm:p-3">
-              {mapMode === "complaint" ? (
-                <DashboardMap
-                  reports={filteredReports}
-                  heatmap={showHeatmap ? filteredStats.heatmap : []}
-                  className="relative h-full overflow-hidden rounded-[1.4rem] border border-white/50 bg-white/40 backdrop-blur-md"
-                />
-              ) : (
-                <SentimentMap
-                  reports={filteredReports}
-                  className="h-full overflow-hidden rounded-[1.4rem] border border-slate-800 bg-slate-950"
-                />
-              )}
-            </div>
-
-            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200/80 px-4 py-3 sm:px-5">
-              {mapMode === "complaint" ? (
-                <button
-                  type="button"
-                  onClick={() => setShowHeatmap((current) => !current)}
-                  className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
-                >
-                  {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
-                </button>
-              ) : (
-                <div className="flex flex-wrap gap-2 text-xs">
-                  <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-slate-700">
-                    😡 Angry
-                  </span>
-                  <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-slate-700">
-                    😐 Neutral
-                  </span>
-                  <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-slate-700">
-                    🙂 Happy
-                  </span>
+            <div className="pointer-events-none absolute inset-x-2 top-2 z-[1100] sm:inset-x-4 sm:top-4">
+              <div className="pointer-events-auto flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-white/35 bg-slate-950/55 px-3 py-2.5 text-white shadow-2xl backdrop-blur-md sm:px-4">
+                <div className="min-w-0">
+                  <p className="text-[11px] uppercase tracking-[0.16em] text-slate-200/90">
+                    Full Screen Map
+                  </p>
+                  <h2 className="truncate text-sm font-semibold sm:text-base">
+                    {mapMode === "complaint" ? "Complaint map" : "Sentiment map"}
+                  </h2>
                 </div>
-              )}
-              <p className="text-xs text-slate-500">
-                Loaded {filteredReports.length} reports from database
-              </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setMapMode("complaint")}
+                    className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                      mapMode === "complaint"
+                        ? "bg-blue-500 text-white"
+                        : "border border-slate-200/60 bg-white/15 text-slate-100 hover:bg-white/25"
+                    }`}
+                  >
+                    Complaint
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMapMode("sentiment")}
+                    className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
+                      mapMode === "sentiment"
+                        ? "bg-blue-500 text-white"
+                        : "border border-slate-200/60 bg-white/15 text-slate-100 hover:bg-white/25"
+                    }`}
+                  >
+                    Sentiment
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsMapFullscreen(false)}
+                    className="rounded-full border border-slate-200/70 bg-white/15 px-3 py-1.5 text-xs font-semibold text-slate-100 transition hover:bg-white/25"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="pointer-events-none absolute inset-x-2 bottom-2 z-[1100] sm:inset-x-4 sm:bottom-4">
+              <div className="pointer-events-auto flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-white/35 bg-slate-950/55 px-3 py-2 text-white shadow-2xl backdrop-blur-md sm:px-4">
+                {mapMode === "complaint" ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowHeatmap((current) => !current)}
+                    className="rounded-full border border-slate-200/70 bg-white/15 px-3 py-1.5 text-xs font-semibold text-slate-100 transition hover:bg-white/25"
+                  >
+                    {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
+                  </button>
+                ) : (
+                  <div className="flex flex-wrap gap-2 text-xs">
+                    <span className="rounded-full border border-slate-200/70 bg-white/15 px-3 py-1 text-slate-100">
+                      😡 Angry
+                    </span>
+                    <span className="rounded-full border border-slate-200/70 bg-white/15 px-3 py-1 text-slate-100">
+                      😐 Neutral
+                    </span>
+                    <span className="rounded-full border border-slate-200/70 bg-white/15 px-3 py-1 text-slate-100">
+                      🙂 Happy
+                    </span>
+                  </div>
+                )}
+                <p className="text-[11px] text-slate-200/90 sm:text-xs">
+                  Loaded {filteredReports.length} reports from database
+                </p>
+              </div>
             </div>
           </div>
         </div>
