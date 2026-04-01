@@ -47,6 +47,10 @@ body::before {
   font-family: var(--font-geist-sans), Arial, sans-serif;
 }
 
+.street-map-dark.leaflet-container {
+  background: #020617;
+}
+
 /* Enhanced glassmorphism utilities */
 .glass-panel {
   @apply bg-white/30 backdrop-blur-xl border border-white/40;
@@ -66,4 +70,28 @@ body::before {
 
 .glass-text-muted {
   @apply text-slate-700/80;
+}
+
+.luminosity-road {
+  transition: opacity 260ms ease-out;
+}
+
+.luminosity-tooltip {
+  border: 1px solid rgba(15, 23, 42, 0.2);
+  border-radius: 8px;
+  box-shadow: 0 6px 14px rgba(2, 6, 23, 0.12);
+  color: #0f172a;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+
+.glass-overlay {
+  background: linear-gradient(140deg, rgba(10, 20, 38, 0.62), rgba(10, 20, 38, 0.34));
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow:
+    0 14px 34px rgba(2, 6, 23, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
 }

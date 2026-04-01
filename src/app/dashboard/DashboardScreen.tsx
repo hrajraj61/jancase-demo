@@ -634,6 +634,12 @@ export function DashboardScreen() {
               >
                 Citizen App
               </Link>
+              <Link
+                href="/streetmap"
+                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/60 px-4 py-2 text-slate-600 hover:bg-white/80"
+              >
+                Street Map
+              </Link>
             </div>
           </div>
           <p className="mt-4 text-xs text-slate-400">
